@@ -1,0 +1,790 @@
+<title>Kariera Skoczka</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky athlete strip, tabbed main column, live standings column; hill profile with red K-line is the signature element */
+:root{--gold:#c99a1b;--silver:#8e9aa5;--bronze:#a8683a;--band:#12263a;--bandfg:#eef4f9;--bg:#f5f9fc;--panel:#ffffff;--ink:#0e1b29;--mute:#586a7a;--line:#d3dfe7;--k:#d3302a;--blue:#216a96;--good:#2a8a57;--soft:#e8f0f5;--me:#fff1c9;
+--disp:'Barlow Condensed','Arial Narrow',sans-serif;--body:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a2d41;--panel:#233b55;--ink:#eef4f9;--mute:#a6b8c8;--line:#385370;--k:#ff6a5f;--blue:#7dbbe6;--good:#5bd08f;--soft:#2b4764;--me:#4a4420;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a2d41;--panel:#233b55;--ink:#eef4f9;--mute:#a6b8c8;--line:#385370;--k:#ff6a5f;--blue:#7dbbe6;--good:#5bd08f;--soft:#2b4764;--me:#4a4420;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--disp);font-weight:700;letter-spacing:.02em;text-transform:uppercase;margin:0;text-wrap:balance}
+h2{font-size:26px}h3{font-size:18px;color:var(--mute)}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:2px solid var(--ink)}
+.brand{font:700 30px var(--disp);letter-spacing:.04em;text-transform:uppercase}.brand i{font-style:normal;color:var(--k)}
+.who{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:14px}
+.ovr{font:700 44px/1 var(--disp);min-width:2ch;text-align:center;background:var(--ink);color:var(--bg);padding:2px 10px}
+.pill{display:inline-block;font:600 12px var(--mono);padding:1px 8px;border:1px solid var(--ink);text-transform:uppercase;letter-spacing:.04em}
+.cur td{background:var(--soft);font-weight:600}
+nav{border-bottom:1px solid var(--line);gap:0;margin-bottom:16px}
+nav button{border:0;border-bottom:3px solid transparent;padding:8px 16px;margin-bottom:-1px}
+nav button[aria-current=true]{background:transparent;color:var(--ink);border-bottom-color:var(--k)}
+nav button:hover{background:var(--soft)}
+h3{font:600 12px var(--mono);letter-spacing:.08em;margin:12px 0 6px}
+h2{font-size:24px;letter-spacing:.03em}
+.card{border-radius:2px}
+.band{display:grid;grid-template-columns:minmax(0,2.2fr) auto auto;gap:6px 22px;align-items:center;background:var(--band);color:var(--bandfg);padding:12px 16px;margin:8px 0 10px;animation:pop .25s ease-out}
+.band .bl{display:flex;align-items:center;gap:10px;min-width:0}
+.band .bn{font:700 30px/1 var(--disp);min-width:2ch;color:var(--bandfg);opacity:.75}
+.band .bnm{font:700 22px/1.1 var(--disp);text-transform:uppercase;letter-spacing:.03em;overflow-wrap:anywhere}
+.band .bsub{font:500 12px var(--mono);opacity:.75}
+.band .bd{font:600 20px var(--disp);text-align:right}.band .bd b{font:700 38px/1 var(--disp)}
+.band .br{text-align:center}
+.band .bx{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.2);padding-top:6px;font-size:13px}
+.band .tag{background:var(--k);color:#fff;font:700 12px var(--mono);padding:1px 8px;letter-spacing:.06em}
+.md{display:inline-block;min-width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;font:700 14px/26px var(--mono);background:var(--soft);color:var(--ink)}
+.md.g1{background:var(--gold);color:#1b1500}.md.g2{background:var(--silver);color:#10161b}.md.g3{background:var(--bronze);color:#fff}
+.band .md{background:rgba(255,255,255,.14);color:var(--bandfg)}.band .md.g1{background:var(--gold);color:#1b1500}.band .md.g2{background:var(--silver);color:#10161b}.band .md.g3{background:var(--bronze);color:#fff}
+.mv{font:600 11px var(--mono);white-space:nowrap}.mv.u{color:var(--good)}.mv.d{color:var(--k)}.mv.s,.mv.n{color:var(--mute)}
+tr.lead td{font-weight:700}
+tr.flash td{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:var(--me)}to{background:transparent}}
+@keyframes pop{from{transform:translateY(-5px);opacity:.5}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.tlw{padding:4px 16px 10px}.mh{margin:16px 0 4px;padding-bottom:4px;border-bottom:1px solid var(--ink)}
+.tl{display:grid;grid-template-columns:48px 30px minmax(0,1fr);gap:0 8px;padding:10px 0;position:relative}
+.tl::before{content:"";position:absolute;left:77px;top:0;bottom:0;border-left:2px solid var(--line)}
+.tl::after{content:"";position:absolute;left:72px;top:16px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--mute)}
+.tl.now::after{background:var(--k);border-color:var(--k)}
+.tl.past{opacity:.62}.tl.now{background:var(--me)}
+.tl .dt{font:700 26px/1 var(--disp);text-align:center}.tl .dt span{display:block;font:500 11px var(--mono);text-transform:uppercase;color:var(--mute);margin-top:2px}
+.tl .tb{grid-column:3;min-width:0}.tl .tt{font:700 18px/1.2 var(--disp);text-transform:uppercase;letter-spacing:.02em;margin-bottom:4px}
+.tl .tr{margin-top:4px;font-size:13px}
+.jg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:8px 0}
+.jg>div{border:1px solid var(--line);background:var(--bg);text-align:center;padding:8px 2px 6px}
+.jg .jl{font:600 11px var(--mono);color:var(--mute);letter-spacing:.06em}
+.jg .fl{width:30px;height:20px;margin:4px auto;display:block;border:1px solid var(--line)}
+.jg .jn{font:700 24px/1 var(--disp)}
+.jg .out{opacity:.45;background:transparent}.jg .out .jn{text-decoration:line-through}.jg .out .jx{display:block;font:500 10px var(--mono)}
+.jg .jx{display:none}
+.bk{width:100%;border-collapse:collapse;font-size:14px}.bk td{padding:3px 0;border-bottom:1px solid var(--line)}.bk td:last-child{text-align:right;font:600 14px var(--mono)}.bk tr.tot td{border-bottom:0;border-top:2px solid var(--ink);font-weight:700;font-size:16px;padding-top:6px}
+.wind{display:flex;align-items:center;gap:14px;border:1px solid var(--line);padding:8px 12px;margin:8px 0;background:var(--panel)}
+.wind .wv{font:700 30px/1 var(--disp);min-width:90px}.wind .wb{flex:1;height:10px;background:var(--soft);position:relative}
+.wind .wb i{position:absolute;top:-3px;bottom:-3px;width:4px;background:var(--ink);transform:translateX(-2px)}.wind .wb:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;border-left:1px dashed var(--mute)}
+.topgrid{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:10px;align-items:stretch;margin:8px 0}
+.topgrid .band{margin:0;grid-template-columns:minmax(0,2fr) auto auto auto}
+.topgrid .wind{margin:0;flex-direction:column;align-items:stretch;gap:6px}
+.wind .wt{display:flex;justify-content:space-between;font:500 12px var(--mono);color:var(--mute)}
+.band .jts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.band .jt{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);padding:3px 7px;font:600 14px var(--mono)}
+.band .jt .fl{width:20px;height:13px;border:0}.band .jt.out{opacity:.4;text-decoration:line-through}
+.band .bp{font:600 20px var(--disp);text-align:right}.band .bp b{font:700 38px/1 var(--disp)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;margin-top:10px}
+.cols .sc{max-height:600px;overflow:auto;border:1px solid var(--line)}.cols table{margin:0}
+.cols th{position:sticky;top:0;background:var(--panel);z-index:1}
+@media (max-width:900px){.topgrid,.cols{grid-template-columns:1fr}.cols .sc{max-height:420px}.topgrid .band{grid-template-columns:minmax(0,1fr) auto auto}.band .br{display:none}}
+.gate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:6px 0}
+.gate label{border:1px solid var(--line);padding:6px 2px;text-align:center;cursor:pointer;background:var(--bg);font:600 15px var(--mono)}
+.gate label span{display:block;font:500 11px var(--mono);color:var(--mute)}
+.gate label:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}.gate input{position:absolute;opacity:0;pointer-events:none}
+@media (max-width:520px){.band{grid-template-columns:minmax(0,1fr) auto}.band .br{display:none}.band .bd b{font-size:30px}}
+.live{max-height:380px;overflow:auto;position:relative;border:1px solid var(--line)}
+.log{font:13px/1.45 var(--mono);max-height:200px;overflow:auto;border:1px solid var(--line);padding:8px;background:var(--bg)}
+.log div{padding:2px 0;border-bottom:1px dotted var(--line)}
+.fl{width:20px;height:13px;vertical-align:-2px;margin-right:6px;outline:1px solid var(--line);display:inline-block}
+.pill.lw{background:#b8860b;border-color:#b8860b;color:#fff}
+.pill.lg,.pill.lc{background:var(--good);border-color:var(--good);color:#fff}
+.pill.l3{background:var(--k);border-color:var(--k);color:#fff}.pill.l2{background:var(--blue);border-color:var(--blue);color:var(--bg)}
+.pill.e{border-style:dashed;color:var(--mute);border-color:var(--mute)}
+nav{display:flex;gap:4px;margin:14px 0;flex-wrap:wrap}
+nav button,button.b,.chip{font:600 16px var(--disp);letter-spacing:.05em;text-transform:uppercase;padding:8px 16px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+nav button[aria-current=true],button.b.p,.chip[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+button.b.k{background:var(--k);border-color:var(--k);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px}
+@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mute{color:var(--mute)}.mono{font-family:var(--mono)}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font:600 12px var(--mono);text-transform:uppercase;text-align:left;color:var(--mute);padding:4px 8px;border-bottom:1px solid var(--ink)}
+td{padding:5px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+tr.me td{background:var(--me);font-weight:600}
+tr.q td{color:var(--mute)}
+.big{font:700 54px/1 var(--disp)}
+.risk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.risk label{border:1px solid var(--line);padding:10px;cursor:pointer;background:var(--bg)}
+.risk input{margin-right:6px}.risk b{display:block;font:600 16px var(--disp);text-transform:uppercase}
+.risk label:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+svg text{font:500 11px var(--mono);fill:var(--mute)}
+.attr{display:grid;grid-template-columns:110px minmax(0,1fr) 44px 44px;gap:10px;align-items:center;margin:8px 0}
+.bar{height:10px;background:var(--soft)}.bar i{display:block;height:100%;background:var(--blue)}
+input[type=text],select{font:inherit;padding:8px;border:1px solid var(--ink);background:var(--bg);color:var(--ink);width:100%}
+.notice{border-left:4px solid var(--k);padding:6px 12px;background:var(--soft);margin:10px 0;font-size:14px}
+.promo{border-left-color:var(--good)}
+@media (max-width:520px){.attr{grid-template-columns:90px minmax(0,1fr) 36px 40px}.risk{grid-template-columns:1fr}.big{font-size:44px}}
+</style>
+<div class="wrap" id="app"></div>
+<script>
+const R=Math.random,rnd=(a,b)=>a+R()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),pick=a=>a[Math.floor(R()*a.length)];
+const gauss=()=>{let u=0,v=0;while(!u)u=R();while(!v)v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CC={SLO:'Słowenia',AUT:'Austria',GER:'Niemcy',NOR:'Norwegia',POL:'Polska',JPN:'Japonia',SUI:'Szwajcaria',FIN:'Finlandia',ITA:'Włochy',CZE:'Czechy',USA:'USA',CAN:'Kanada',FRA:'Francja',KAZ:'Kazachstan',BUL:'Bułgaria',SWE:'Szwecja',EST:'Estonia',ROU:'Rumunia',TUR:'Turcja',CHN:'Chiny',SVK:'Słowacja',UKR:'Ukraina',KOR:'Korea Południowa'};
+const LV={2:'Puchar Kontynentalny',3:'Puchar Świata',g:'Letnie Grand Prix',c:'Letni Puchar Kontynentalny',w:'Mistrzostwa świata',n:'Puchar Narodów'};
+const ATTR={wyb:'Wybicie',lot:'Faza lotu',sty:'Styl',lad:'Lądowanie',psy:'Psychika'};
+const PTS=[100,80,60,50,45,40,36,32,29,26,24,22,20,18,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+const PH={t1:'Seria próbna 1',t2:'Seria próbna 2',q:'Kwalifikacje',r1:'Konkurs, 1. seria',r2:'Konkurs, seria finałowa'};
+const RS=`3|Domen Prevc|SLO|96.0
+3|Ryoyu Kobayashi|JPN|86.3
+3|Daniel Tschofenig|AUT|85.9
+3|Ren Nikaido|JPN|85.3
+3|Anže Lanišek|SLO|84.0
+3|Stephan Embacher|AUT|83.8
+3|Philipp Raimund|GER|83.5
+3|Jan Hörl|AUT|80.8
+3|Felix Hoffmann|GER|79.1
+3|Stefan Kraft|AUT|78.6
+3|Johann André Forfang|NOR|78.4
+3|Marius Lindvik|NOR|78.1
+3|Manuel Fettner|AUT|77.9
+3|Naoki Nakamura|JPN|77.7
+3|Kristoffer Eriksen Sundal|NOR|75.6
+3|Valentin Foubert|FRA|75.3
+3|Maximilian Ortner|AUT|75.0
+3|Jonas Schuster|AUT|74.9
+3|Gregor Deschwanden|SUI|74.8
+3|Vladimir Zografski|BUL|74.7
+3|Tomofumi Naito|JPN|74.4
+3|Antti Aalto|FIN|74.3
+3|Kacper Tomasiak|POL|74.2
+3|Niko Kytösaho|FIN|73.3
+3|Andreas Wellinger|GER|72.9
+3|Halvor Egner Granerud|NOR|71.6
+3|Timi Zajc|SLO|71.2
+3|Karl Geiger|GER|71.1
+3|Pius Paschke|GER|70.5
+3|Isak Andreas Langmo|NOR|69.9
+3|Kamil Stoch|POL|69.2
+3|Sandro Hauswirth|SUI|68.8
+3|Piotr Żyła|POL|68.4
+3|Yukiya Sato|JPN|68.0
+3|Jason Colby|USA|67.9
+3|Kevin Bickner|USA|67.3
+3|Artti Aigro|EST|66.5
+3|Benjamin Østvold|NOR|65.7
+3|Maciej Kot|POL|65.6
+3|Rok Oblak|SLO|65.5
+3|Tate Frantz|USA|64.7
+3|Ilya Mizernykh|KAZ|64.6
+3|Paweł Wąsek|POL|64.6
+3|Dawid Kubacki|POL|64.0
+3|Clemens Aigner|AUT|63.7
+3|Simon Ammann|SUI|63.2
+3|Felix Trunz|SUI|63.2
+3|Hektor Kapustik|SVK|63.2
+3|Sakutaro Kobayashi|JPN|63.2
+3|Roman Koudelka|CZE|63.1
+3|Markus Müller|AUT|62.7
+3|Alex Insam|ITA|62.5
+3|Danil Vassilyev|KAZ|62.3
+3|Giovanni Bresadola|ITA|62.3
+3|Eetu Nousiainen|FIN|62.0
+3|Yevhen Marusiak|UKR|62.0
+3|Robin Pedersen|NOR|61.3
+3|Francesco Cecon|ITA|61.2
+3|Adrian Thon Gundersrud|NOR|61.2
+3|Vilho Palosaari|FIN|61.1
+3|Žiga Jančar|SLO|60.8
+3|Juri Kesseli|SUI|60.7
+3|Luca Roth|GER|60.6
+3|Aleksander Zniszczoł|POL|60.2
+3|Jarkko Määttä|FIN|60.2
+3|Ben Bayer|GER|60.0
+3|Žak Mogel|SLO|59.8
+3|Andrew Urlaub|USA|59.8
+3|Yanick Wasser|SUI|59.8
+3|Killian Peier|SUI|59.6
+3|Junshiro Kobayashi|JPN|59.6
+3|Vitaliy Kalinichenko|UKR|59.2
+3|Klemens Joniak|POL|59.2
+3|Jørgen Oliver Strøm|NOR|59.2
+3|Mackenzie Boyd-Clowes|CAN|58.8
+3|Keiichi Sato|JPN|58.8
+3|Sølve Jokerud Strand|NOR|58.8
+2|Fredrik Villumstad|NOR|61.0
+2|Clemens Leitner|AUT|60.9
+2|Raffael Zimmermann|AUT|59.9
+2|Philipp Aschenwald|AUT|59.5
+2|Lukas Haagen|AUT|59.3
+2|Niklas Bachlinger|AUT|58.7
+2|Enej Faletič|SLO|58.4
+2|Sindre Ulven Jørgensen|NOR|58.1
+2|Remo Imhof|SUI|57.8
+2|Julijan Šmid|AUT|57.7
+2|Martin Hamann|GER|57.5
+2|Hannes Landerer|AUT|57.4
+2|Jules Chervet|FRA|56.8
+2|Stefan Rainer|AUT|56.4
+2|Jakub Wolny|POL|56.3
+2|Gorazd Završnik|SLO|56.2
+2|Jannik Faisst|GER|55.7
+2|Žiga Jelar|SLO|55.6
+2|Rok Masle|SLO|55.5
+2|Enzo Milesi|FRA|55.4
+2|Constantin Schmid|GER|55.3
+2|Adam Niżnik|POL|55.1
+2|Noriaki Kasai|JPN|55.1
+2|Lovro Kos|SLO|54.8
+2|Jarosław Krzak|POL|54.5
+2|Alessandro Batby|FRA|54.5
+2|Kaimar Vagul|EST|54.2
+2|Johannes Poelz|AUT|54.1
+2|Erik Belshaw|USA|53.9
+2|Go Yamamoto|JPN|53.9
+2|Jakob Steinberger|AUT|53.8
+2|Oddvar Gunnerød|NOR|53.7
+2|Adrian Tittel|GER|53.4
+2|David Rygl|CZE|53.3
+2|Qiwu Song|CHN|53.3
+2|Shinnosuke Fujita|JPN|53.3
+2|Jernej Prešečnik|SLO|53.2
+2|Bendik Jakobsen Heggli|NOR|53.2
+2|Daniel Skarka|CZE|53.1
+2|Paavo Romppainen|FIN|53.1
+2|Richard Selbekk-Hansen|NOR|53.1
+2|Bryce Kloc|USA|53.0
+2|Kamil Waszek|POL|53.0
+2|Tuomas Kinnunen|FIN|53.0
+2|Lasse Deimel|GER|53.0
+2|Jaka Kramer|SLO|52.8
+2|Maksim Bartolj|SLO|52.6
+2|Francisco Mörth|AUT|52.6
+2|Łukasz Łukaszczyk|POL|52.5
+2|Simon Steinberger|AUT|52.5
+2|Nik Gostiša Lah|SLO|52.5
+2|Yuto Nakamura|JPN|52.5
+2|Tarik Vanwieren|CAN|52.4
+2|Max Unglaube|GER|52.3
+2|Janne Holz|GER|52.2
+2|Sergey Tkachenko|KAZ|52.2
+2|Finn Braun|GER|52.2
+2|Sunwoong Jang|KOR|52.2
+2|Kacper Juroszek|POL|52.2
+2|Decker Dean|USA|52.1
+2|Johannes Aardal|NOR|52.1
+2|Konrad Tomasiak|POL|52.1
+2|Jan Galica|POL|52.0
+2|Louis Obersteiner|FRA|51.9
+2|Fredrik Gran|NOR|51.9
+2|Tomas Kuisma|FIN|51.7
+2|Daniel Andrei Cacina|ROU|51.7
+2|Taku Takeuchi|JPN|51.6
+2|Ari Repellin|FRA|51.5
+2|Maximilian Gartner|ITA|51.4
+2|Weijie Zhen|CHN|51.4
+2|Emanuel Schmid|GER|51.4
+2|Heung-Chul Choi|KOR|51.3
+2|Pål Håkon Bjørtomt|NOR|51.3
+2|Nurshat Tursunzhanov|KAZ|51.3
+2|Filip Krenek|CZE|51.0
+2|Timi Heiskanen|FIN|51.0
+2|Riki Kurita|JPN|51.0
+2|Benedikt Holub|CZE|50.8
+2|Mitchell Penning|CAN|50.8
+2|Alex Reiter|GER|50.8
+2|Daimatsu Takehana|JPN|50.6`.split('\n').map(x=>{const[l,n,c,o]=x.split('|');return{l:+l,n,c,o:+o}});
+const CAL=`2026-11-14|Notodden|NOR|98|90|1|e
+2026-11-15|Notodden|NOR|98|90|1|e
+2026-11-20|Lillehammer|NOR|140|123|3|v||mix
+2026-11-21|Lillehammer|NOR|140|123|3|v
+2026-11-22|Lillehammer|NOR|140|123|3|v
+2026-11-21|Ruka|FIN|142|120|2|e
+2026-11-22|Ruka|FIN|142|120|2|e
+2026-11-28|Ruka|FIN|142|120|3|v
+2026-11-29|Ruka|FIN|142|120|3|v
+2026-12-05|Wisła|POL|134|120|3|v
+2026-12-06|Wisła|POL|134|120|3|v
+2026-12-05|Planica|SLO|102|95|1|e
+2026-12-06|Planica|SLO|102|95|1|e
+2026-12-12|Titisee-Neustadt|GER|142|125|3|v
+2026-12-13|Titisee-Neustadt|GER|142|125|3|v
+2026-12-12|Szczyrk|POL|104|95|1|e
+2026-12-13|Szczyrk|POL|104|95|1|e
+2026-12-12|Klingenthal|GER|140|125|2|e
+2026-12-13|Klingenthal|GER|140|125|2|e
+2026-12-19|Engelberg|SUI|140|125|3|v
+2026-12-20|Engelberg|SUI|140|125|3|v
+2026-12-27|Engelberg|SUI|140|125|2|e
+2026-12-28|Engelberg|SUI|140|125|2|e
+2026-12-29|Oberstdorf (TCS)|GER|137|120|3|v|T
+2027-01-01|Garmisch-Partenkirchen (TCS)|GER|142|125|3|v|T
+2027-01-03|Innsbruck (TCS)|AUT|128|120|3|v|T
+2027-01-06|Bischofshofen (TCS)|AUT|142|125|3|v|T
+2027-01-09|Klingenthal|GER|140|125|1|e
+2027-01-10|Klingenthal|GER|140|125|1|e
+2027-01-09|Brotterode|GER|117|105|2|e
+2027-01-10|Brotterode|GER|117|105|2|e
+2027-01-16|Zakopane|POL|140|125|3|v||team
+2027-01-17|Zakopane|POL|140|125|3|v
+2027-01-22|Sapporo|JPN|137|123|3|v
+2027-01-23|Sapporo|JPN|137|123|3|v||mix
+2027-01-24|Sapporo|JPN|137|123|3|v
+2027-01-23|Zakopane|POL|140|125|2|e
+2027-01-24|Zakopane|POL|140|125|2|e
+2027-01-30|Willingen|GER|147|130|3|v
+2027-01-31|Willingen|GER|147|130|3|v
+2027-01-30|Szczyrk|POL|104|95|1|e
+2027-01-31|Szczyrk|POL|104|95|1|e
+2027-01-30|Lillehammer|NOR|140|123|2|e
+2027-01-31|Lillehammer|NOR|140|123|2|e
+2027-02-06|Lake Placid|USA|128|120|3|v
+2027-02-07|Lake Placid|USA|128|120|3|v||mix
+2027-02-13|Lahti|FIN|130|116|3|v||team
+2027-02-14|Lahti|FIN|130|116|3|v
+2027-02-13|Planica|SLO|102|95|1|e
+2027-02-14|Planica|SLO|102|95|1|e
+2027-02-20|Vikersund|NOR|240|200|3|v|F
+2027-02-21|Vikersund|NOR|240|200|3|v|F
+2027-03-13|Oslo|NOR|134|120|3|v
+2027-03-14|Oslo|NOR|134|120|3|v
+2027-03-19|Planica|SLO|240|200|3|v|F
+2027-03-21|Planica|SLO|240|200|3|v|F
+2027-03-19|Zakopane|POL|140|125|1|e
+2027-03-20|Zakopane|POL|140|125|1|e
+2027-03-20|Zakopane|POL|140|125|2|e
+2027-03-21|Zakopane|POL|140|125|2|e
+2027-02-27|MŚ Falun, normalna skocznia|SWE|100|90|w|||ind
+2027-02-28|MŚ Falun, mikst (normalna)|SWE|100|90|w|||mix
+2027-03-05|MŚ Falun, duża skocznia|SWE|134|120|w|||ind
+2027-03-06|MŚ Falun, drużyny (duża)|SWE|134|120|w|||team`.split('\n').map(x=>{const[d,p,c,hs,k,l,v,t,fm]=x.split('|');return{d,p,c,hs:+hs,k:+k,l:isNaN(+l)?l:+l,v:v=='v',t:t||'',fm:fm||'ind'}});
+const GPR=`08-15|Szczyrk|POL|104|95
+08-16|Szczyrk|POL|104|95
+08-22|Courchevel|FRA|132|125
+08-23|Courchevel|FRA|132|125
+09-05|Hinterzarten|GER|109|100
+09-06|Hinterzarten|GER|109|100
+09-19|Klingenthal|GER|140|125
+09-20|Klingenthal|GER|140|125
+10-03|Wisła|POL|134|120
+10-04|Wisła|POL|134|120
+10-10|Hinzenbach|AUT|90|85
+10-11|Hinzenbach|AUT|90|85`.split('\n').map(x=>{const[d,p,c,hs,k]=x.split('|');return{d,p,c,hs:+hs,k:+k,l:'g',v:false,t:'',fm:'ind'}});
+const CGPR=`08-29|Szczyrk|POL|104|95
+08-30|Szczyrk|POL|104|95
+09-12|Stams|AUT|115|105
+09-13|Stams|AUT|115|105
+09-26|Hinterzarten|GER|109|100
+09-27|Hinterzarten|GER|109|100
+10-17|Klingenthal|GER|140|125
+10-18|Klingenthal|GER|140|125`.split('\n').map(x=>{const[d,p,c,hs,k]=x.split('|');return{d,p,c,hs:+hs,k:+k,l:'c',v:false,t:'',fm:'ind'}});
+const mkCal=o=>{const LO={2:0,3:1,w:2},w=CAL.filter(e=>e.l!==1).map(e=>({...e,d:(+e.d.slice(0,4)+o)+e.d.slice(4),done:0})).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:LO[a.l]-LO[b.l]);
+ return w.concat(GPR.concat(CGPR).map(e=>({...e,d:(2027+o)+'-'+e.d,done:0})).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0))};
+const ovr=a=>Math.round(a.wyb*.27+a.lot*.30+a.sty*.14+a.lad*.10+a.psy*.19);
+const buildField=l=>RS.filter(r=>r.l==l).map(r=>({n:r.n,c:r.c,o:l==2?r.o*.9:r.o}));
+const FL=(()=>{const r=(x,y,w,h,f)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`,H=a=>a.map((f,i)=>r(0,i*20/a.length,30,20/a.length+.1,f)).join(''),V=a=>a.map((f,i)=>r(i*30/a.length,0,30/a.length+.1,20,f)).join(''),ci=(x,y,q,f)=>`<circle cx="${x}" cy="${y}" r="${q}" fill="${f}"/>`;
+ const cross=(bg,c1,c2)=>r(0,0,30,20,bg)+(c2?r(0,7,30,6,c1)+r(7,0,6,20,c1)+r(0,8.5,30,3,c2)+r(8.5,0,3,20,c2):r(0,8,30,4,c1)+r(8,0,4,20,c1));
+ return{AUT:H(['#ed2939','#fff','#ed2939']),GER:H(['#000','#dd0000','#ffce00']),POL:H(['#fff','#dc143c']),ITA:V(['#009246','#fff','#ce2b37']),FRA:V(['#0055a4','#fff','#ef4135']),ROU:V(['#002b7f','#fcd116','#ce1126']),BUL:H(['#fff','#00966e','#d62612']),EST:H(['#0072ce','#000','#fff']),FIN:cross('#fff','#003580'),NOR:cross('#ba0c2f','#fff','#00205b'),SWE:cross('#006aa7','#fecc00'),SUI:r(0,0,30,20,'#d52b1e')+r(13,4,4,12,'#fff')+r(9,8,12,4,'#fff'),JPN:r(0,0,30,20,'#fff')+ci(15,10,6,'#bc002d'),CZE:H(['#fff','#d7141a'])+'<path d="M0 0L15 10L0 20Z" fill="#11457e"/>',SLO:H(['#fff','#005da4','#ed1c24'])+r(5,3,5,7,'#005da4'),USA:H(['#b22234','#fff','#b22234','#fff','#b22234','#fff','#b22234'])+r(0,0,13,11,'#3c3b6e'),CAN:V(['#d52b1e','#fff','#fff','#d52b1e'])+ci(15,10,4,'#d52b1e'),KAZ:r(0,0,30,20,'#00afca')+ci(15,10,4.5,'#fec50c'),TUR:r(0,0,30,20,'#e30a17')+ci(12,10,5,'#fff')+ci(13.5,10,4,'#e30a17'),CHN:r(0,0,30,20,'#de2910')+r(4,3,4,4,'#ffde00'),SVK:H(['#fff','#0b4ea2','#ee1c25']),UKR:H(['#0057b8','#ffd700']),KOR:r(0,0,30,20,'#fff')+ci(15,10,5,'#cd2e3a')}})();
+const flag=c=>FL[c]?`<svg class="fl" viewBox="0 0 30 20" aria-hidden="true">${FL[c]}</svg>`:'';
+const CM=new Map(RS.map(r=>[r.n,r.c]));const cOf=n=>S&&n==S.name?S.cc:(CM.get(n)||'');
+const NAT=()=>[...new Set(S.field[3].concat(S.field[2]).map(j=>j.c).concat([S.cc]))];
+const POOL=c=>S.field[3].concat(S.field[2]).filter(j=>j.c==c).sort((a,b)=>b.o-a.o);
+const fld=(l,me)=>{if(l=='g')return S.field[3];if(l=='c')return S.field[2];if(l=='w'){const pool=S.field[3].concat(S.field[2]);return NAT().flatMap(c=>pool.filter(j=>j.c==c).sort((a,b)=>b.o-a.o).slice(0,c==S.cc&&me?3:4))}return S.field[l]};
+const QU={SLO:5,AUT:5,GER:5,NOR:5,POL:5,JPN:5,SUI:4,FIN:4,ITA:4,CZE:3,USA:3,CAN:2,FRA:2,KAZ:2,BUL:2,SWE:2,EST:2,ROU:2,TUR:2,CHN:2};
+const WOMEN=`SLO|Nika Prevc|94
+SLO|Ema Klinec|82
+SLO|Nika Vodan|76
+AUT|Eva Pinkelnig|86
+AUT|Lisa Eder|80
+AUT|Julia Mühlbacher|78
+GER|Selina Freitag|84
+GER|Katharina Schmid|82
+GER|Agnes Reisch|76
+NOR|Silje Opseth|84
+NOR|Eirin Maria Kvandal|82
+NOR|Thea Minyan Bjørseth|80
+JPN|Nozomi Maruyama|86
+JPN|Yuki Ito|82
+JPN|Sara Takanashi|80
+POL|Anna Twardosz|74
+POL|Pola Bełtowska|66
+POL|Nicole Konderla-Juroszek|64
+CAN|Alexandria Loutitt|76
+CAN|Abigail Strate|74
+FRA|Joséphine Pagnier|68
+ITA|Jessica Malsiner|66
+FIN|Jenny Rautionaho|68
+USA|Annika Belshaw|64
+SUI|Sina Arnet|64`.split('\n').map(x=>{const[c,n,o]=x.split('|');return{c,n,o:+o,w:1}});
+const wcKth=c=>S.field[3].filter(j=>j.c==c).map(j=>j.o).sort((x,y)=>y-x)[(QU[c]||2)-1];
+function slotOK(){const c=S.cc,q=QU[c]||2,n=S.field[3].filter(j=>j.c==c).length,k=wcKth(c),o=ovr(S.a);return n<q&&o>=52?'vac':(k!==undefined&&o>k?'bet':'')}
+function promoteFix(){const c=S.cc,q=QU[c]||2,a=S.field[3].filter(j=>j.c==c).sort((x,y)=>x.o-y.o);if(a.length>=q){const w=a[0];S.field[3]=S.field[3].filter(j=>j!==w);S.field[2].push(w)}}
+function callupOK(){return S.lvl==2&&!!slotOK()&&(S.last2||99)<=10}
+function wcCall(d){return S.lvl==2&&S.evs.some(x=>x.d==d&&x.l==3&&x.fm=='ind')&&callupOK()}
+function buildTeams(e,withMe){const mix=e.fm=='mix',N=mix?2:4,teams=[];let me=false;
+ NAT().forEach(c=>{let men=POOL(c).map(j=>({...j}));if(withMe&&c==S.cc)men.push({n:S.name,c,o:ovr(S.a),me:1});
+  men.sort((a,b)=>b.o-a.o);if(men.length<N)return;men=men.slice(0,N);let js=men;
+  if(mix){const w=WOMEN.filter(x=>x.c==c).sort((a,b)=>b.o-a.o).slice(0,2).map(x=>({...x}));if(w.length<2)return;js=men.concat(w)}
+  js.forEach(j=>{j.tc=c});if(js.some(j=>j.me))me=true;teams.push({c,js})});
+ return{teams,me}}
+function playable(e){if(e.l=='g')return S.lvl==3;if(e.l=='c')return S.lvl==2;
+ if(e.fm!='ind')return buildTeams(e,true).me;
+ if(e.l=='w')return POOL(S.cc).filter(j=>j.o>ovr(S.a)).length<4;
+ if(e.l==S.lvl)return !(e.l==2&&wcCall(e.d));
+ if(e.l==3&&S.lvl==2)return wcCall(e.d);return false}
+const medal=(c,i)=>{S.medals[c]=S.medals[c]||[0,0,0];S.medals[c][i]++};
+function teamTotals(e,r1only){const m={};e.teams.forEach(t=>m[t.c]={c:t.c,a:0,b:null,t:0});e.r1.forEach(x=>{const o=m[x.j.tc];o.a+=x.p;o.t+=x.p});
+ if(!r1only&&e.r2)e.r2.forEach(x=>{const o=m[x.j.tc];o.b=(o.b||0)+x.p;o.t+=x.p});
+ return Object.values(m).sort((p,q)=>(q.b!==null)-(p.b!==null)||q.t-p.t)}
+function autoTeam(e){const ev=e.ev,w=wind();if(!e.teams)e.teams=buildTeams(ev,false).teams;
+ if(!e.r1){e.flat=e.teams.flatMap(t=>t.js);e.r1=jumpAll(e.flat,ev,w,'n',1.5)}
+ if(!e.r2){const top=teamTotals(e,1).slice(0,8).map(x=>x.c);e.r2=e.wx=='1'?[]:jumpAll(e.flat.filter(j=>top.includes(j.tc)),ev,w,'n',1.5)}}
+function teamAward(ev,tt){if(ev.l=='w')tt.slice(0,3).forEach((x,i)=>medal(x.c,i));else tt.forEach((x,i)=>{S.nat[x.c]=(S.nat[x.c]||0)+(PTS[i]||0)})}
+function teamTable(tt,n=10){return`<div class="sc"><table><thead><tr><th class="n">#</th><th>Kraj</th><th class="n">1. seria</th><th class="n">2. seria</th><th class="n">Suma pkt</th></tr></thead><tbody>${tt.slice(0,n).map((x,i)=>`<tr class="${x.c==S.cc?'me':''}"><td class="n">${i+1}</td><td>${flag(x.c)}${CC[x.c]||x.c}</td><td class="n">${x.a.toFixed(1)}</td><td class="n">${x.b===null?'-':x.b.toFixed(1)}</td><td class="n">${x.t.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>`}
+function myTeamBox(e){const t=(e.teams||[]).find(t=>t.c==S.cc);if(!t)return'';const g=(r,j)=>r?r.find(x=>x.j.n==j.n&&x.j.tc==j.tc):null;
+ return`<h3>Twoja drużyna</h3><div class="sc"><table><thead><tr><th>Zawodnik</th><th class="n">1. seria</th><th class="n">2. seria</th></tr></thead><tbody>${t.js.map(j=>{const a=g(e.r1,j),b=g(e.r2,j);return`<tr class="${j.me?'me':''}"><td>${esc(j.n)}</td><td class="n">${a?a.d.toFixed(1)+' m':'-'}</td><td class="n">${b?b.d.toFixed(1)+' m':'-'}</td></tr>`}).join('')}</tbody></table></div>`}
+function natCard(){const b=Object.entries(S.nat).sort((x,y)=>y[1]-x[1]);
+ return`<div class="card"><h3>Puchar Narodów</h3>${b.length?`<div class="sc"><table><thead><tr><th class="n">#</th><th>Kraj</th><th class="n">Pkt</th></tr></thead><tbody>${b.slice(0,12).map((x,i)=>`<tr class="${x[0]==S.cc?'me':''}"><td class="n">${i+1}</td><td>${flag(x[0])}${CC[x[0]]||x[0]}</td><td class="n">${Math.round(x[1])}</td></tr>`).join('')}</tbody></table></div>`:'<p class="mute">Brak punktów. Zaczną się liczyć po pierwszym konkursie Pucharu Świata.</p>'}</div>`}
+function medalCard(){const b=Object.entries(S.medals).sort((x,y)=>y[1][0]-x[1][0]||y[1][1]-x[1][1]||y[1][2]-x[1][2]);
+ return`<div class="card"><h3>Mistrzostwa świata, medale</h3>${b.length?`<div class="sc"><table><thead><tr><th class="n">#</th><th>Kraj</th><th class="n">Z</th><th class="n">S</th><th class="n">B</th></tr></thead><tbody>${b.map((x,i)=>`<tr class="${x[0]==S.cc?'me':''}"><td class="n">${i+1}</td><td>${flag(x[0])}${CC[x[0]]||x[0]}</td><td class="n">${x[1][0]}</td><td class="n">${x[1][1]}</td><td class="n">${x[1][2]}</td></tr>`).join('')}</tbody></table></div>`:'<p class="mute">Mistrzostwa w Falun jeszcze się nie odbyły.</p>'}</div>`}
+function sideCard(){const e=S.ev?S.ev.ev:S.evs[S.idx],l=e?e.l:S.lvl;if(l=='w')return medalCard();if(e&&e.fm!='ind')return natCard();return standCard(l,true)}
+function squadCard(){const c=S.cc,q=QU[c]||2,w=S.field[3].filter(j=>j.c==c).sort((a,b)=>b.o-a.o),o=ovr(S.a),sl=slotOK(),k=wcKth(c);
+ const msg=S.lvl==3?'Jesteś w kadrze na Puchar Świata.':sl=='vac'?'W kadrze jest wolne miejsce. Dobre starty w Pucharze Kontynentalnym dadzą ci powołanie.':sl=='bet'?'Twój overall przebija najsłabszego z limitu. Dobre starty dadzą ci powołanie.':'Brak miejsca w kadrze. Potrzebujesz overallu wyższego niż '+Math.round(k||0)+'.';
+ return`<div class="card"><h3>${flag(c)}Kadra narodowa: ${CC[c]}</h3><p class="mute">Limit miejsc w Pucharze Świata: ${q}. Obecnie w kadrze: ${w.length}. ${msg}</p>${w.length?`<div class="sc"><table><thead><tr><th class="n">#</th><th>Zawodnik</th><th class="n">OVR</th></tr></thead><tbody>${w.slice(0,9).map((j,i)=>`<tr class="${i<q?'':'q'}"><td class="n">${i+1}</td><td>${esc(j.n)}</td><td class="n">${Math.round(j.o)}</td></tr>`).join('')}</tbody></table></div><p class="mute">Do limitu liczy się ${q} najlepszych. Ty masz overall ${o}.</p>`:'<p class="mute">Twój kraj nie ma obecnie nikogo w Pucharze Świata.</p>'}</div>`}
+const dfmt=d=>d.slice(8)+'.'+d.slice(5,7)+'.'+d.slice(0,4);
+const seasonLabel=o=>(2026+o)+'/'+(27+o);
+let S=null,TAB='k',LVF=0,CALF=0;
+try{S=JSON.parse(localStorage.getItem('skoczek-v7')||'null')}catch(e){}
+if(S&&S.field)[2,3].forEach(l=>S.field[l].forEach(j=>CM.set(j.n,j.c)));
+const save=()=>{try{localStorage.setItem('skoczek-v7',JSON.stringify(S))}catch(e){}};
+
+let CURF=0;
+function simJump(j,ev,risk,fam,w,gate=0){
+ const A=j.me?S.a:{wyb:j.o,lot:j.o,sty:j.o,lad:j.o,psy:j.o},o=j.me?ovr(S.a):j.o,fly=ev.hs>=200,sc=fly?.9:ev.hs>=120?.55:.4;
+ const rk=risk=='s'?[.7,-.8]:risk=='a'?[1.5,1.3]:[1,0];
+ const mean=ev.k+(o+fam*1.2-62)*sc*(ev.hs/130)+rk[1]*(fly?2:1)+w*3.2*(ev.hs/130)+gate*3*(ev.hs/130)+(j.me?CURF*1.4*(ev.hs/130):0);
+ const sd=(fly?7:3.8)*(1.15-A.psy/100*.4)*rk[0];
+ let d=clamp(mean+gauss()*sd,ev.k*.6,ev.hs*(fly?1.07:1.12));d=Math.round(d*2)/2;
+ const over=d-ev.hs;let st0=54+(A.sty-60)*.07+(A.lad-60)*.03+gauss()*1.2-(over>0?over*.7:0);st0=clamp(st0,35,60);
+ const b=st0/3,nt=Array.from({length:5},()=>clamp(Math.round((b+gauss()*.35)*2)/2,10,20)),sr=[...nt].sort((a,b)=>a-b),st=sr[1]+sr[2]+sr[3];
+ const cf=fly?1.2:ev.hs<110?2:1.8,dp=Math.round((60+(d-ev.k)*cf)*10)/10;
+ const wp=Math.round(-w*6*(ev.hs/130)*10)/10,gt=Math.round(-gate*6*(ev.hs/130)*10)/10;
+ return{j,d,st,nt,dp,wp,gt,g:gate,w:Math.round(w*100)/100,p:Math.round((dp+st+wp+gt)*10)/10};
+}
+const JP=['AUT','GER','NOR','SLO','POL','JPN','SUI','FIN','ITA','CZE','USA','FRA','CAN','KAZ','RUS','SWE','ROU','TUR','BUL','UKR','EST','LAT'].filter(c=>FL[c]);
+const pickJudges=c=>{const a=JP.filter(x=>x!==c),o=[];while(o.length<5&&a.length)o.push(a.splice(Math.floor(R()*a.length),1)[0]);return o};
+const condGate=(w,ev)=>w>1.1?-1:w<-1.1?1:0;
+const jumpAll=(js,ev,w,risk,fam)=>{const gate=condGate(w,ev);return js.map(j=>simJump(j,ev,j.me?risk:'n',j.me?fam:1.5,clamp(w+gauss()*.5,-3,3),gate)).sort((a,b)=>b.p-a.p)};
+const WXR={Innsbruck:.16,Willingen:.12,Vikersund:.1,Planica:.08,Sapporo:.07,Oberstdorf:.07,Garmisch:.07,Zakopane:.06,Lillehammer:.06,Wisła:.06,Falun:.06};
+const wxP=ev=>ev.l=='g'||ev.l=='c'?.03:(Object.entries(WXR).find(([k])=>ev.p.startsWith(k))||[0,.05])[1];
+const rollWx=ev=>{const p=wxP(ev),r=R();return r<p*.2?'x':r<p*.55?'1':(r<p&&ev.fm=='ind')?'q':''};
+const wxLabel=p=>p>=.12?'silny, możliwe odwołanie serii':p>=.07?'zmienny':'spokojny';
+const formLbl=f=>f>=1.5?'świetna':f>=.5?'dobra':f>-.5?'przeciętna':f>-1.5?'słaba':'bardzo słaba';
+const INJ=[{n:'Stłuczenie kolana',a:2,b:4,w:.42},{n:'Skręcenie kostki',a:4,b:8,w:.3},{n:'Naderwanie mięśnia uda',a:8,b:14,w:.2},{n:'Zerwane więzadło krzyżowe',a:22,b:34,w:.08}];
+const pickInj=()=>{let r=R();for(const x of INJ){r-=x.w;if(r<=0)return x}return INJ[0]};
+const seedQ=(ev,me)=>(me?fld(ev.l,1).concat([meObj()]):fld(ev.l)).map(j=>({j,d:0,st:0,p:j.me?ovr(S.a):j.o})).sort((a,b)=>b.p-a.p);
+const meObj=()=>({n:S.name,c:S.cc,me:1});
+const wind=()=>gauss()*.7;
+function autoRounds(e){const ev=e.ev,w=wind();
+ if(!e.q)e.q=e.wx=='q'?seedQ(ev,0):jumpAll(fld(ev.l),ev,w,'n',1.5);
+ if(!e.r1)e.r1=jumpAll(e.q.slice(0,50).map(x=>x.j),ev,w,'n',1.5);
+ if(!e.r2)e.r2=e.wx=='1'?[]:jumpAll(e.r1.slice(0,30).map(x=>x.j),ev,w,'n',1.5)}
+function classify(e){const m=new Map(e.r1.map(x=>[x.j.n,{x,y:null,t:x.p}]));e.r2.forEach(x=>{const o=m.get(x.j.n);o.y=x;o.t+=x.p});
+ const top=e.r2.map(x=>m.get(x.j.n)).sort((a,b)=>b.t-a.t);
+ const rest=e.r1.filter(x=>!e.r2.some(y=>y.j.n==x.j.n)).map(x=>m.get(x.j.n));return top.concat(rest)}
+function award(ev,fin){fin.forEach((r,i)=>{const n=r.x.j.n,pt=PTS[i]||0;if(pt&&S.pts[ev.l])S.pts[ev.l][n]=(S.pts[ev.l][n]||0)+pt;if(pt&&ev.l==3)S.nat[r.x.j.c]=(S.nat[r.x.j.c]||0)+pt;if(ev.t=='T'&&ev.l==3)S.tcs[n]=(S.tcs[n]||0)+r.t});if(ev.l=='w')fin.slice(0,3).forEach((r,i)=>medal(r.x.j.c,i));ev.win=fin[0].x.j.n;ev.done=1}
+const simFull=ev=>{const e={ev,wx:rollWx(ev)};if(e.wx=='x'){ev.done=1;ev.win='odwołany';return}if(ev.fm!='ind'){autoTeam(e);const tt=teamTotals(e);ev.win=CC[tt[0].c];teamAward(ev,tt);ev.done=1;return}autoRounds(e);award(ev,classify(e))};
+const board=m=>Object.entries(m).sort((a,b)=>b[1]-a[1]);
+function advance(){while(S.idx<S.evs.length){const e=S.evs[S.idx];
+ if(S.inj){if(S.inj.left>0){S.inj.left--;S.inj.missed++;simFull(e);S.idx++;continue}S.note='Wracasz po kontuzji ('+S.inj.n+'). Ominęło cię '+S.inj.missed+' konkursów, a forma jeszcze nie wróciła.';S.form=clamp(S.form-1.5,-3,3);S.inj=null}
+ if(playable(e))return true;simFull(e);S.idx++}return false}
+
+function autoDev(rk){const g=.3+(rk&&rk<=10?.25:rk&&rk<=30?.12:0)+(S.age<19?.12:0);S.dev=(S.dev||0)+g;const out=[];
+ while(S.dev>=1){S.dev-=1;const ks=Object.keys(ATTR).filter(k=>S.a[k]<100);if(!ks.length)break;const w=ks.map(k=>101-S.a[k]),tot=w.reduce((a,b)=>a+b);let r=R()*tot,k=ks[0];for(let i=0;i<ks.length;i++){r-=w[i];if(r<=0){k=ks[i];break}}S.a[k]++;out.push(ATTR[k])}return out}
+function finalize(){const e=S.ev,ev=e.ev,team=ev.fm!='ind';let rk,pt=0;
+ if(team){autoTeam(e);const tt=teamTotals(e);e.tt=tt;ev.win=CC[tt[0].c];teamAward(ev,tt);ev.done=1;rk=tt.findIndex(x=>x.c==S.cc)+1;pt=ev.l=='w'?0:(PTS[rk-1]||0)}
+ else{autoRounds(e);const fin=classify(e);e.fin=fin;award(ev,fin);rk=fin.findIndex(r=>r.x.j.me)+1;pt=ev.l=='w'?0:rk?(PTS[rk-1]||0):0}
+ ev.myrk=rk;if(ev.fm=='ind'&&rk){S.car=S.car||{st:0,w:0,p:0};S.car.st++;if(rk==1)S.car.w++;if(rk<=3)S.car.p++}const gp=ev.l=='g'||ev.l=='c';let tp=0,gain=[],promo='';
+ if(gp)tp=2+(rk&&rk<=10?2:rk&&rk<=30?1:0)+(e.fam>1?1:0),S.tp+=tp;
+ else{gain=autoDev(rk);
+  if(ev.l==2){S.last2=rk||99;S.played=(S.played||0)+1;
+   if(S.lvl==2&&S.played>=3){const b=board(S.pts[2]),pr=b.findIndex(x=>x[0]==S.name)+1;
+    if(ovr(S.a)>=64&&pr&&pr<=10){if(slotOK()){promoteFix();S.lvl=3;S.played=0;promo='Awans: '+LV[3]+'. Trener wpisał cię do kadry na Puchar Świata.'}else promo='Spełniasz kryteria sportowe, ale w kadrze narodowej nie ma wolnego miejsca (limit '+(QU[S.cc]||2)+').'}}}
+  if(ev.l=='w')S.wch.push({s:seasonLabel(S.off),ev:ev.p,rk,team})}
+ S.form=clamp(S.form*.6+(rk?(rk<=10?.8:rk<=30?.2:-.5):-.7)+gauss()*.4,-3,3);
+ let inj=null;if((e.fell&&R()<.3)||R()<.004){const t=pickInj();S.pendingInj={n:t.n,left:ri(t.a,t.b),missed:0};inj={n:t.n,left:S.pendingInj.left}}
+ e.sum={rk,pt,tp,promo,gain,gp,team,inj,fell:!!e.fell,pl:ev.l=='w'?'miejsce na MŚ':team?'pkt Pucharu Narodów':'pkt '+LV[ev.l]};e.ph='done';save()}
+function startEvent(){const e=S.evs[S.idx];S.note=null;S.pre=false;S.ev={ev:e,jc:pickJudges(''),ph:'t1',fam:0,jumped:false,mk:null,form:clamp(S.form+gauss()*.6,-3,3),wx:rollWx(e)};
+ if(S.ev.wx=='x'){e.done=1;e.win='odwołany';Object.assign(S.ev,{ph:'done',cancel:true,sum:{rk:0,pt:0,tp:0,gain:[],gp:false,team:false,pl:'',promo:''}});save();return}
+ if(e.fm!='ind'){const T=buildTeams(e,true);S.ev.teams=T.teams;S.ev.flat=T.teams.flatMap(t=>t.js)}
+ else if(S.ev.wx=='q')S.ev.q=seedQ(e,1);
+ save()}
+
+const cfOf=ev=>ev.hs>=200?1.2:ev.hs<110?2:1.8;
+const PHL=e=>{const ev=e.ev,ph=e.ph;return ev.fm!='ind'&&ph=='r1'?'Seria drużynowa 1':ev.fm!='ind'&&ph=='r2'?'Seria drużynowa 2':PH[ph]};
+const sg=x=>(x>0?'+':'')+x;
+function entFor(e){const ev=e.ev,ph=e.ph;
+ if(ev.fm!='ind'){if(ph=='r2'){const top=teamTotals(e,1).slice(0,8).map(x=>x.c);return e.flat.filter(j=>top.includes(j.tc))}return e.flat}
+ if(ph=='r1')return e.q.slice(0,50).map(x=>x.j);if(ph=='r2')return e.r1.slice(0,30).map(x=>x.j);
+ return fld(ev.l,1).concat([meObj()])}
+function orderFor(e,ent){const ev=e.ev,ph=e.ph,o=j=>j.me?ovr(S.a):j.o;
+ if(ev.fm!='ind'){const m={};ent.forEach(j=>(m[j.tc]=m[j.tc]||[]).push(j));let cs=Object.keys(m);
+  if(ph=='r2')cs=teamTotals(e,1).map(x=>x.c).filter(c=>m[c]).reverse();else cs.sort((a,b)=>m[a].reduce((t,j)=>t+o(j),0)-m[b].reduce((t,j)=>t+o(j),0));
+  return cs.flatMap(c=>m[c].sort((a,b)=>o(a)-o(b)))}
+ if(ph=='r1'||ph=='r2')return ent.slice().reverse();
+ return ent.map(j=>({j,k:o(j)+gauss()*3})).sort((a,b)=>a.k-b.k).map(x=>x.j)}
+function startRound(){const e=S.ev,ev=e.ev,ph=e.ph;if(ph=='t1'||ph=='t2')e.fam=(e.fam||0)+1;
+ const ent=entFor(e),w0=wind(),g0=condGate(w0,ev);
+ e.rd={ph,order:orderFor(e,ent),i:0,res:[],cw:w0,nw:clamp(w0+gauss()*.45,-3,3),pg:0,ws:[],g:g0,log:['Początek serii: '+PHL(e)+'. Wiatr '+sg(w0.toFixed(2))+' m/s, belka '+sg(g0)+'.'],done:false};e.jumped=false;save()}
+function liveRows(e){const rd=e.rd,ev=e.ev,r2=rd.ph=='r2'&&ev.fm=='ind';
+ return rd.res.map(r=>{const x=r2?e.r1.find(y=>y.j.n==r.j.n):null;return{r,tot:Math.round((r.p+(x?x.p:0))*10)/10}}).sort((a,b)=>b.tot-a.tot)}
+function teamLive(e){const rd=e.rd,ph=rd.ph,m={};e.teams.forEach(t=>m[t.c]={c:t.c,a:0,b:null,t:0,n:0});
+ if(ph=='r2')e.r1.forEach(x=>{const o=m[x.j.tc];o.a+=x.p;o.t+=x.p});
+ rd.res.forEach(x=>{const o=m[x.j.tc];if(ph=='r2')o.b=(o.b||0)+x.p;else o.a+=x.p;o.t+=x.p;o.n++});
+ return Object.values(m).filter(o=>o.n>0).sort((p,q)=>q.t-p.t)}
+const isTeamRd=e=>e.ev.fm!='ind'&&(e.rd.ph=='r1'||e.rd.ph=='r2');
+function doJump(e,j,risk){const rd=e.rd,ev=e.ev;CURF=e.form||0;const team=isTeamRd(e);
+ const before=team?teamLive(e):liveRows(e),leadBefore=team?(before[0]&&before[0].c):(before[0]&&before[0].r.j.n);
+ rd.prev={};if(team)before.forEach((x,i)=>rd.prev[x.c]=i+1);else before.forEach((x,i)=>rd.prev[x.r.j.n]=i+1);
+ if(rd.nw===undefined)rd.nw=clamp(rd.cw+gauss()*.45,-3,3);const w=clamp(rd.nw+gauss()*.2,-3,3);rd.ws.push(w);
+ const pg=j.me?(rd.pg||0):0,gate=rd.g+pg;
+ const r=simJump(j,ev,j.me?risk:'n',j.me?(e.fam||0):1.5,w,gate);r.bib=rd.i+1;if(!e.jc)e.jc=pickJudges('');r.jc=e.jc;r.pg=pg;
+ if(j.me){const over=Math.max(0,r.d-ev.hs),fly=ev.hs>=200,pf=(risk=='a'?.03:risk=='s'?.004:.012)*(1.4-S.a.lad/100)*(1+over*.25)*(fly?1.6:1);
+  const pf2=pf*(pg>0?1+.4*pg:pg<0?1+.15*pg:1);if(R()<pf2){r.fall=true;r.nt=r.nt.map(x=>Math.max(8,Math.round((x-6)*2)/2));const sr=[...r.nt].sort((a,b)=>a-b);r.st=sr[1]+sr[2]+sr[3];r.p=Math.round((r.dp+r.st+r.wp+r.gt)*10)/10;e.fell=true}}
+ rd.res.push(r);rd.i++;rd.pg=0;
+ rd.cw=clamp(rd.cw+gauss()*.18,-2.5,2.5);rd.nw=clamp(rd.cw+gauss()*.45,-3,3);
+ if(rd.i%5==0&&rd.i<rd.order.length){const a=rd.ws.slice(-6).reduce((x,y)=>x+y,0)/Math.min(6,rd.ws.length),g=condGate(a,ev);if(g!==rd.g){rd.log.unshift('Jury zmienia belkę '+(g>rd.g?'wyżej':'niżej')+', teraz '+sg(g)+'.');rd.g=g}}
+ let line;if(team){const t=teamLive(e),rk=t.findIndex(x=>x.c==j.tc)+1;line=`#${r.bib} ${j.n} (${CC[j.tc]||j.tc}): ${r.d.toFixed(1)} m, ${r.p.toFixed(1)} pkt. Drużyna: ${rk}. miejsce${rk==1&&leadBefore!=j.tc?', obejmuje prowadzenie':''}.`}
+ else{const rows=liveRows(e),rk=rows.findIndex(x=>x.r===r)+1,lead=rows[0].tot,x=rows[rk-1];line=`#${r.bib} ${j.n} (${j.c}): ${r.d.toFixed(1)} m, ${r.p.toFixed(1)} pkt${rd.ph=='r2'?', suma '+x.tot.toFixed(1):''}. ${rk}. miejsce${rk==1?(leadBefore&&leadBefore!=j.n?', NOWY LIDER':', prowadzi'):', strata '+(lead-x.tot).toFixed(1)+' pkt'}.`}
+ if(pg)line+=' (Twoja belka: '+(pg>0?'podniesiona +':'obniżona ')+pg+' względem jury)';if(r.fall)line+=' UPADEK!';rd.log.unshift(line)}
+function finishCheck(e){const rd=e.rd;if(rd.i<rd.order.length||rd.done)return;rd.done=true;e[rd.ph]=[...rd.res].sort((a,b)=>b.p-a.p);e.jumped=true;
+ const a=rd.ws.reduce((x,y)=>x+y,0)/Math.max(1,rd.ws.length);e.cond={w:Math.round(a*100)/100,g:rd.g};const m=rd.res.find(x=>x.j.me);e.mk=m?m.d:null;rd.log.unshift('Koniec serii.')}
+function stepRound(n){const e=S.ev,rd=e.rd;while(n>0&&rd.i<rd.order.length&&!rd.order[rd.i].me){doJump(e,rd.order[rd.i],'n');n--}finishCheck(e);save()}
+function playMe(risk){const e=S.ev,rd=e.rd,j=rd.order[rd.i];if(j&&j.me)doJump(e,j,risk);finishCheck(e);save()}
+function endNow(){const e=S.ev,ev=e.ev,ph=e.ph,rk=r=>r.findIndex(x=>x.j.me)+1;
+ if(ph=='r1'&&e.wx=='1')return true;
+ if(ev.fm!='ind'){if(ph=='r2')return true;if(ph=='r1')return !teamTotals(e,1).slice(0,8).some(x=>x.c==S.cc);return false}
+ return ph=='r2'||(ph=='q'&&rk(e.q)>50)||(ph=='r1'&&rk(e.r1)>30)}
+function nextPh(){const e=S.ev;if(endNow())return finalize();const o=e.ev.fm!='ind'?['t1','r1','r2']:e.wx=='q'?['t1','t2','r1','r2']:['t1','t2','q','r1','r2'];e.ph=o[o.indexOf(e.ph)+1];e.jumped=false;e.mk=null;e.rd=null;save()}
+function nextEvent(){if(S.pendingInj){S.inj=S.pendingInj;S.pendingInj=null}S.ev=null;S.idx++;if(!advance())seasonEnd();save()}
+function seasonEnd(){const l=S.lvl,b=board(S.pts[l]),rk=b.findIndex(x=>x[0]==S.name)+1,o=ovr(S.a);let promo='';const th={2:[60,3]};
+ S.hist.push({s:seasonLabel(S.off),l,rk,o,age:S.age});
+ if(l<3&&rk&&rk<=th[l][1]&&o>=th[l][0]){if(slotOK()){promoteFix();S.lvl++;promo='Awans na koniec sezonu: '+LV[S.lvl]+'.'}else promo='Wyniki dają awans, ale w kadrze narodowej nie ma wolnego miejsca (limit '+(QU[S.cc]||2)+').'}
+ S.end={rk,l,promo,total:b.length}}
+
+/* ---------- starzenie, emerytury i młode talenty ---------- */
+const KB={'Domen Prevc':1999,'Ryoyu Kobayashi':1996,'Daniel Tschofenig':2002,'Ren Nikaido':2001,'Anže Lanišek':1996,'Philipp Raimund':2000,'Jan Hörl':1998,'Felix Hoffmann':1996,'Stefan Kraft':1993,'Johann André Forfang':1995,'Marius Lindvik':1998,'Manuel Fettner':1985,'Naoki Nakamura':1996,'Gregor Deschwanden':1991,'Antti Aalto':1995,'Kamil Stoch':1987,'Piotr Żyła':1987,'Dawid Kubacki':1990,'Aleksander Zniszczoł':1994,'Paweł Wąsek':1999,'Jakub Wolny':1995,'Halvor Egner Granerud':1996,'Karl Geiger':1993,'Andreas Wellinger':1995,'Pius Paschke':1990,'Timi Zajc':2000,'Lovro Kos':1999,'Michael Hayböck':1991,'Killian Peier':1995,'Yukiya Sato':1995,'Robert Johansson':1990,'Markus Eisenbichler':1991,'Constantin Schmid':1999,'Stephan Leyhe':1992,'Peter Prevc':1992,'Cene Prevc':1996};
+const hashN=n=>{let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))>>>0;return h};
+function ensureAges(){[2,3].forEach(l=>S.field[l].forEach(j=>{if(!j.age){j.age=KB[j.n]?2026-KB[j.n]:18+hashN(j.n)%16;if(j.age<24&&!j.pot)j.pot=Math.min(98,j.o+ri(2,12))}}))}
+const NM={SLO:['Žan|Luka|Nejc|Tim|Rok|Jaka','Kovač|Zupan|Hribar|Mlakar|Petek|Vidmar|Korošec|Golob'],AUT:['Lukas|Felix|Moritz|Tobias|Jonas|Leon','Steiner|Gruber|Hofer|Moser|Bauer|Wallner|Reiter|Aigner'],GER:['Luca|Finn|Paul|Noah|Elias|Jannis','Schneider|Fischer|Weber|Keller|Brandt|Vogel|Hartmann|Lange'],NOR:['Sander|Emil|Oscar|Mathias|Jonas|Eirik','Haugen|Berg|Lund|Solheim|Dahl|Moen|Strand|Nilsen'],POL:['Jakub|Szymon|Filip|Mateusz|Kacper|Wojciech','Kowalczyk|Nowak|Malinowski|Wrona|Zając|Sobczak|Kubiak|Pawlak'],JPN:['Haruki|Sota|Kaito|Ryota|Takumi|Yuto','Tanaka|Ito|Watanabe|Kimura|Hayashi|Mori|Ishikawa|Fujita'],SUI:['Noel|Luca|Nico|Dario|Livio|Jan','Müller|Meier|Keller|Frei|Huber|Zürcher|Baumann|Näf'],FIN:['Eino|Aleksi|Joni|Miko|Ville|Oskari','Korhonen|Lahtinen|Laine|Heikkinen|Virtanen|Salo|Nieminen|Koskinen'],ITA:['Matteo|Luca|Marco|Davide|Elia|Nicolò','Rossi|Bianchi|Conti|Ferrari|Moretti|Lombardi|Gallo|Costa'],CZE:['Jakub|Matěj|Ondřej|Filip|Vojtěch|Adam','Novák|Svoboda|Dvořák|Černý|Procházka|Kučera|Veselý|Horák'],USA:['Ethan|Mason|Logan|Owen|Caleb|Tyler','Miller|Carter|Brooks|Hayes|Reed|Foster|Collins|Bennett'],FRA:['Lucas|Hugo|Théo|Nathan|Enzo|Mathis','Martin|Bernard|Dubois|Laurent|Girard|Bonnet|Faure|Roux'],KAZ:['Aldiyar|Nurlan|Dias|Alikhan|Yerlan|Arman','Akhmetov|Nurgaliev|Sadykov|Kenzhebaev|Tleuov|Omarov|Baimukhan|Zhunusov'],CAN:['Liam|Noah|Owen|Ryan|Jack|Ethan','Tremblay|Gagnon|Roy|Campbell|Wilson|Murphy|Clarke|Bouchard'],UKR:['Maksym|Artem|Danylo|Illia|Taras|Roman','Kovalenko|Bondarenko|Shevchenko|Melnyk|Tkachenko|Kravchenko|Boyko|Lysenko'],KOR:['Min-jun|Seo-jun|Ji-ho|Hyun-woo|Dong-hyun|Tae-yang','Kim|Lee|Park|Choi|Jung|Kang|Cho|Yoon'],EST:['Karl|Mart|Hendrik|Rasmus|Siim|Kaspar','Tamm|Saar|Mägi|Kask|Kukk|Rebane|Ilves|Pärn'],CHN:['Wei|Hao|Jun|Tao|Ming|Yu','Wang|Li|Zhang|Liu|Chen|Yang|Zhao|Wu'],SVK:['Samuel|Martin|Tomáš|Michal|Dominik|Patrik','Horváth|Kováč|Varga|Tóth|Nagy|Baláž|Szabó|Molnár'],ROU:['Andrei|Darius|Mihai|Radu|Vlad|Cosmin','Popescu|Ionescu|Dumitru|Stan|Marin|Toma|Rusu|Munteanu'],BUL:['Georgi|Ivan|Nikolay|Petar|Stefan|Dimitar','Ivanov|Petrov|Georgiev|Dimitrov|Kolev|Todorov|Stoyanov|Angelov']};
+function newName(c){const m=NM[c]||NM.AUT,f=m[0].split('|'),l=m[1].split('|');let n,t=0;do{n=pick(f)+' '+pick(l)}while(CM.has(n)&&++t<40);return n}
+function evolveWorld(){const news={ret:[],deb:[],dec:[],ret_n:0};
+ ensureAges();const out={2:[],3:[]};
+ [2,3].forEach(l=>{S.field[l].forEach(j=>{j.age++;
+  if(j.pot&&j.age<=27){j.o=clamp(j.o+Math.max(0,j.pot-j.o)*(j.age<20?.3:.2)+gauss()*1.1,38,98)}
+  else{const d=j.age<=30?0:j.age<=33?-.7:-1.6;j.o=clamp(j.o+d+gauss()*1.1,38,98)}
+  const lim=l==2?44:54,pr=j.age>=40?1:j.age>=33?(j.age-32)*.16:0,pr2=j.age>=29&&j.o<lim?.18:0;
+  if(R()<pr+pr2){out[l].push(j);if(j.o>=(l==2?55:70))news.ret.push({n:j.n,c:j.c,age:j.age,o:Math.round(j.o)})}})});
+ news.ret_n=out[2].length+out[3].length;
+ [2,3].forEach(l=>S.field[l]=S.field[l].filter(j=>!out[l].includes(j)));
+ if(!S.pop0)S.pop0=S.field[2].length+S.field[3].length+news.ret_n;const nn=clamp(S.pop0-(S.field[2].length+S.field[3].length)+ri(0,2),2,16),cs=Object.keys(QU),tw=cs.reduce((a,c)=>a+QU[c],0);
+ for(let i=0;i<nn;i++){let r=R()*tw,c=cs[0];for(const k of cs){r-=QU[k];if(r<=0){c=k;break}}
+  const x=R(),pot=x<.08?ri(90,98):x<.3?ri(80,89):ri(62,79),age=ri(16,18),j={n:newName(c),c,o:ri(40,54)+(pot>88?4:0),age,pot,nw:1};
+  CM.set(j.n,c);S.field[2].push(j);news.deb.push({n:j.n,c,age,o:Math.round(j.o),pot})}
+ news.deb.sort((a,b)=>b.pot-a.pot);
+ /* kadry: limity krajowe */
+ cs.forEach(c=>{if(!S.wcq){S.wcq={};cs.forEach(x=>S.wcq[x]=Math.max(QU[x]||2,S.field[3].filter(j=>j.c==x).length))}const q=(S.wcq[c]||QU[c]||2)-(S.lvl==3&&c==S.cc?1:0);let w=S.field[3].filter(j=>j.c==c).sort((a,b)=>b.o-a.o);
+  while(w.length>q){const x=w.pop();S.field[3]=S.field[3].filter(j=>j!==x);S.field[2].push(x)}
+  let k=S.field[2].filter(j=>j.c==c).sort((a,b)=>b.o-a.o);
+  while(w.length<q&&k.length&&k[0].o>=50){const x=k.shift();S.field[2]=S.field[2].filter(j=>j!==x);S.field[3].push(x);w.push(x)}
+  w=S.field[3].filter(j=>j.c==c).sort((a,b)=>a.o-b.o);k=S.field[2].filter(j=>j.c==c).sort((a,b)=>b.o-a.o);
+  while(w.length&&k.length&&k[0].o>w[0].o+1){const a=w.shift(),b=k.shift();S.field[3]=S.field[3].filter(j=>j!==a);S.field[2]=S.field[2].filter(j=>j!==b);S.field[3].push(b);S.field[2].push(a);w=S.field[3].filter(j=>j.c==c).sort((a,b)=>a.o-b.o);k=S.field[2].filter(j=>j.c==c).sort((a,b)=>b.o-a.o)}});
+ /* gracz: spadek formy z wiekiem */
+ if(S.age>=31){const n=S.age<34?1:S.age<37?2:3,ks=['wyb','wyb','lot','lot','sty','lad','psy'];for(let i=0;i<n;i++){const k=pick(ks);if(S.a[k]>30){S.a[k]--;news.dec.push(ATTR[k])}}}
+ return news}
+const mustRetire=()=>S.age>=38;
+function retire(){S.retired=true;S.ev=null;save()}
+function careerCard(){const h=S.hist,c=S.car||{st:0,w:0,p:0},pk=Math.max(ovr(S.a),...h.map(x=>x.o)),lv=Math.max(...h.map(x=>x.l=='g'?3:+x.l),S.lvl),med=(S.wch||[]).filter(x=>x.rk&&x.rk<=3).length,tit=h.filter(x=>x.rk==1).length;
+ const score=c.w*3+c.p+med*4+tit*6+(lv==3?10:0)+Math.max(0,pk-60),ver=score>=90?'Legenda skoków narciarskich':score>=45?'Gwiazda Pucharu Świata':score>=20?'Solidny zawodnik Pucharu Świata':lv==3?'Zawodnik Pucharu Świata':'Zawodnik Pucharu Kontynentalnego';
+ return`<div class="card"><h2>Koniec kariery</h2><p><b>${flag(S.cc)}${esc(S.name)}</b> · ${CC[S.cc]} · ${S.age} lat. ${ver}.</p><table class="bk"><tr><td>Sezonów w karierze</td><td>${h.length}</td></tr><tr><td>Najwyższy poziom</td><td>${LV[lv]}</td></tr><tr><td>Najwyższy overall</td><td>${pk}</td></tr><tr><td>Starty indywidualne</td><td>${c.st}</td></tr><tr><td>Zwycięstwa</td><td>${c.w}</td></tr><tr><td>Podia</td><td>${c.p}</td></tr><tr><td>Medale mistrzostw świata</td><td>${med}</td></tr><tr><td>Wygrane klasyfikacje sezonu</td><td>${tit}</td></tr></table><p class="mute">Świat skoków toczy się dalej bez ciebie. Możesz zacząć nową karierę albo przejrzeć historię w zakładce Klasyfikacje.</p><button class="b k" data-act="reset">Nowa kariera</button></div>`}
+function newsCard(n){if(!n)return'';const L=a=>a.slice(0,6).map(x=>`<li>${flag(x.c)}${esc(x.n)} · ${x.age} lat${x.pot&&x.pot>=88?' ★':''}</li>`).join('');
+ return`<div class="card" style="margin-top:12px"><h3>Zmiana pokoleń</h3><p class="mute">W świecie skoków kończy karierę ${n.ret_n} zawodników, a do Pucharu Kontynentalnego wchodzi ${n.deb.length} debiutantów. Wieki starszych zawodników są częściowo szacowane.</p>${n.ret.length?`<h3>Pożegnania</h3><ul>${L(n.ret)}</ul>`:''}<h3>Najzdolniejsi debiutanci (★ wielki talent)</h3><ul>${L(n.deb)}</ul>${n.dec&&n.dec.length?`<p class="notice">Wiek robi swoje: spadek w umiejętnościach (${n.dec.join(', ')}).</p>`:''}</div>`}
+function youngCard(){const a=S.field[3].concat(S.field[2]).filter(j=>j.age<=21).sort((x,y)=>(y.pot||y.o)-(x.pot||x.o)).slice(0,8);
+ return`<div class="card" style="margin-top:12px"><h3>Młode talenty świata</h3>${a.length?`<table><thead><tr><th>Zawodnik</th><th class="n">Wiek</th><th class="n">OVR</th><th></th></tr></thead><tbody>${a.map(j=>`<tr><td>${flag(j.c)}${esc(j.n)}</td><td class="n">${j.age}</td><td class="n">${Math.round(j.o)}</td><td>${j.pot>=88?'★':''}</td></tr>`).join('')}</tbody></table>`:'<p class="mute">Brak.</p>'}</div>`}
+function newSeason(){S.off++;S.age++;S.tp+=14;S.evs=mkCal(S.off);S.idx=0;S.end=null;S.played=0;S.tcs={};S.nat={};S.medals={};S.pts={2:{},3:{},g:{},c:{}};S.pre=true;
+ S.news=evolveWorld();advance();save()}
+function newGame(name,cc){const a={};Object.keys(ATTR).forEach(k=>a[k]=ri(38,50)+ri(-3,5));
+ S={name,cc,age:16,a,tp:14,dev:0,lvl:2,off:0,idx:0,evs:mkCal(0),pts:{2:{},3:{},g:{},c:{}},tcs:{},nat:{},medals:{},wch:[],last2:99,form:0,inj:null,note:null,pendingInj:null,ev:null,hist:[],end:null,played:0,pre:true,car:{st:0,w:0,p:0},retired:false,field:{2:buildField(2),3:buildField(3)}};ensureAges();advance();save()}
+
+/* ---------- views ---------- */
+function hill(ev,d){const x0=80,y0=38,sx=500/(ev.hs*1.2),X=m=>x0+m*sx,Y=m=>y0+90*(1-Math.exp(-m/(ev.hs*.55)));
+ let p='M10 8 L'+x0+' '+y0;for(let m=0;m<=ev.hs*1.2;m+=4)p+=' L'+X(m).toFixed(1)+' '+Y(m).toFixed(1);
+ return`<svg viewBox="0 0 600 150" width="100%" role="img" aria-label="Profil skoczni K${ev.k} HS${ev.hs}"><path d="${p}" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+ <line x1="${X(ev.k)}" x2="${X(ev.k)}" y1="${Y(ev.k)-26}" y2="${Y(ev.k)+14}" stroke="var(--k)" stroke-width="3"/><text x="${X(ev.k)-8}" y="146">K ${ev.k}</text>
+ <line x1="${X(ev.hs)}" x2="${X(ev.hs)}" y1="${Y(ev.hs)-20}" y2="${Y(ev.hs)+14}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 3"/><text x="${X(ev.hs)-8}" y="146">HS ${ev.hs}</text>
+ ${d?`<circle cx="${X(d)}" cy="${Y(d)-7}" r="7" fill="var(--k)" stroke="var(--bg)" stroke-width="2"/><text x="${Math.min(X(d)-14,560)}" y="${Y(d)-20}" style="fill:var(--ink);font-weight:600">${d} m</text>`:''}</svg>`}
+function table(res,n=10,fin){const me=res.findIndex(x=>x.j.me);let rows=res.slice(0,n).map((x,i)=>row(x,i));
+ if(me>=n)rows.push('<tr><td colspan="6" class="mute">…</td></tr>'+(me>n?row(res[me-1],me-1,1):'')+row(res[me],me));
+ return`<div class="sc"><table><thead><tr><th class="n">#</th><th>Zawodnik</th><th>Kraj</th><th class="n">m</th><th class="n">Noty</th><th class="n">Pkt</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`}
+function row(x,i,dim){return`<tr class="${x.j.me?'me':''}${dim?' q':''}"><td class="n">${i+1}</td><td>${esc(x.j.n)}</td><td>${flag(x.j.c)}${x.j.c}</td><td class="n">${x.d.toFixed(1)}</td><td class="n">${x.st.toFixed(1)}</td><td class="n">${x.p.toFixed(1)}</td></tr>`}
+function tableTot(fin,n=10){const me=fin.findIndex(r=>r.x.j.me),tr=(r,i,dim)=>`<tr class="${r.x.j.me?'me':''}${dim?' q':''}"><td class="n">${i+1}</td><td>${esc(r.x.j.n)}</td><td>${flag(r.x.j.c)}${r.x.j.c}</td><td class="n">${r.x.d.toFixed(1)}</td><td class="n">${r.y?r.y.d.toFixed(1):'-'}</td><td class="n">${r.t.toFixed(1)}</td></tr>`;
+ let rows=fin.slice(0,n).map((r,i)=>tr(r,i));if(me>=n)rows.push('<tr><td colspan="6" class="mute">…</td></tr>'+(me>n?tr(fin[me-1],me-1,1):'')+tr(fin[me],me));
+ return`<div class="sc"><table><thead><tr><th class="n">#</th><th>Zawodnik</th><th>Kraj</th><th class="n">1. seria</th><th class="n">2. seria</th><th class="n">Suma pkt</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`}
+function wxNote(e){const ev=e.ev;let h=`<p class="mono mute">Forma dnia: ${formLbl(e.form||0)}${e.cond?` · ostatnia seria: wiatr ${e.cond.w>0?'+':''}${e.cond.w} m/s, belka ${e.cond.g>0?'+':''}${e.cond.g}`:''}</p>`;
+ if(e.wx=='q'&&ev.fm=='ind')h+='<div class="notice">Kwalifikacje odwołane z powodu wiatru. Lista startowa według rankingu.</div>';
+ if(e.wx=='1'&&e.ph=='r1'&&e.jumped)h+='<div class="notice">Druga seria odwołana z powodu wiatru. Wyniki 1. serii są wynikami końcowymi.</div>';
+ if(e.jc)h+=`<p class="mono mute" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">Sędziowie konkursu: ${e.jc.map((c,i)=>'<span>'+'ABCDE'[i]+' '+flag(c)+'</span>').join('')}</p>`;
+ return h}
+function judges(m){const n=m.nt,mi=n.indexOf(Math.min(...n)),ma=n.lastIndexOf(Math.max(...n)),jc=m.jc||[];
+ const box=n.map((x,i)=>{const out=i==mi||i==ma,c=jc[i];return`<div class="${out?'out':''}"><div class="jl">SĘDZIA ${'ABCDE'[i]}</div>${c?flag(c)+`<div class="jl">${c}</div>`:''}<div class="jn">${x.toFixed(1)}</div><span class="jx">odrzucona</span></div>`}).join('');
+ const sgn=x=>(x>0?'+':'')+x.toFixed(1);
+ return`<div class="jg">${box}</div><table class="bk"><tr><td>Odległość ${m.d.toFixed(1)} m</td><td>${m.dp.toFixed(1)}</td></tr><tr><td>Noty (trzy środkowe)</td><td>${m.st.toFixed(1)}</td></tr><tr><td>Wiatr ${m.w>0?'+':''}${m.w} m/s ${m.w>0?'(pod narty)':'(w plecy)'}</td><td>${sgn(m.wp)}</td></tr><tr><td>Belka ${m.g>0?'+':''}${m.g}${m.pg?` (twoja zmiana ${m.pg>0?'+':''}${m.pg})`:''}</td><td>${sgn(m.gt)}</td></tr><tr class="tot"><td>Razem</td><td>${m.p.toFixed(1)}</td></tr></table>`+(m.fall?'<p><b>Upadek przy lądowaniu. Noty obniżone.</b></p>':'')}
+function stand(m,n,unit){const b=board(m),me=b.findIndex(x=>x[0]==S.name);let r=b.slice(0,n).map((x,i)=>sr(x,i));
+ if(me>=n)r.push('<tr><td colspan="3" class="mute">…</td></tr>'+sr(b[me],me));
+ return`<div class="sc"><table><thead><tr><th class="n">#</th><th>Zawodnik</th><th class="n">${unit}</th></tr></thead><tbody>${r.join('')}</tbody></table></div>`}
+function sr(x,i){return`<tr class="${x[0]==S.name?'me':''}"><td class="n">${i+1}</td><td>${flag(cOf(x[0]))}${esc(x[0])}</td><td class="n">${Math.round(x[1]*10)/10}</td></tr>`}
+function liveMaps(l){const m={...S.pts[l]},t={...S.tcs},e=S.ev;
+ if(e&&e.ev.l==l&&e.ph!='done'&&(e.r1||e.r2)){const res=e.r2||e.r1;res.forEach((x,i)=>{m[x.j.n]=(m[x.j.n]||0)+(PTS[i]||0)});
+  if(e.ev.t=='T'&&l==3)[e.r1,e.r2].forEach(r=>r&&r.forEach(x=>{t[x.j.n]=(t[x.j.n]||0)+x.p}))}
+ return{m,t}}
+function standCard(l,live){if(l=='n')return natCard();if(l=='w')return medalCard();const{m,t}=live?liveMaps(l):{m:S.pts[l],t:S.tcs};const e=S.ev;
+ let h=`<div class="card"><h3>${live&&e&&e.ph!='done'&&(e.r1||e.r2)?'Na żywo · ':''}${LV[l]}, klasyfikacja generalna</h3>${stand(m,10,'Pkt')}</div>`;
+ if(l==3&&Object.keys(t).length)h+=`<div class="card"><h3>Turniej Czterech Skoczni</h3>${stand(t,8,'Pkt')}</div>`;return h}
+
+function riskUI(e){return`<div class="risk" role="radiogroup" aria-label="Styl skoku">
+ <label><input type="radio" name="risk" value="s"><b>Zachowawczo</b><span class="mute">Mniejszy rozrzut, krótszy skok</span></label>
+ <label><input type="radio" name="risk" value="n" checked><b>Normalnie</b><span class="mute">Pewny rytm</span></label>
+ <label><input type="radio" name="risk" value="a"><b>Ryzykownie</b><span class="mute">Daleko albo słabo</span></label></div>
+ <div class="row"><button class="b k" data-act="jump">Skocz</button>${e.ph=='t2'?'<button class="b" data-act="skip">Pomiń drugi trening</button>':''}</div>`}
+function leadInfo(e,rd){const ev=e.ev,sc=ev.hs/130,cf=cfOf(ev),wp=-rd.cw*6*sc,gt=-rd.g*6*sc,dist=pts=>ev.k+(pts-60-54-wp-gt)/cf;
+ const fmt=d=>d>ev.hs*1.08?'Prowadzenie jest poza zasięgiem rozsądnego skoku (potrzeba ok. '+d.toFixed(1)+' m).':d<ev.k*.8?'Wystarczy przeciętny skok.':'Skocz co najmniej ok. <b>'+d.toFixed(1)+' m</b> (przy obecnym wietrze i belce).';
+ if(isTeamRd(e)){const t=teamLive(e);if(!t.length)return'Nikt jeszcze nie skoczył. Pierwszy skok wyznacza poziom.';const lead=t[0],my=t.find(x=>x.c==S.cc);
+  const mine=my?my.t:(rd.ph=='r2'?e.r1.filter(x=>x.j.tc==S.cc).reduce((q,x)=>q+x.p,0):0);
+  if(lead.c==S.cc)return'Twoja drużyna prowadzi ('+lead.t.toFixed(1)+' pkt).';
+  const need=lead.t-mine+.1;return`Prowadzi ${CC[lead.c]||lead.c} (${lead.t.toFixed(1)} pkt). Drużynie brakuje ${Math.max(0,need).toFixed(1)} pkt. Żeby objąć prowadzenie: `+fmt(dist(need))}
+ const rows=liveRows(e);if(!rows.length)return'Nikt jeszcze nie skoczył. Pierwszy skok wyznacza poziom.';
+ const lead=rows[0],x=rd.ph=='r2'?e.r1.find(y=>y.j.me):null,need=lead.tot+.1-(x?x.p:0);
+ return`Prowadzi ${esc(lead.r.j.n)} (${lead.tot.toFixed(1)} pkt). Żeby objąć prowadzenie: `+fmt(dist(need))}
+const mv=(p,c)=>p===undefined?'<span class="mv n">●</span>':c<p?'<span class="mv u">▲'+(p-c)+'</span>':c>p?'<span class="mv d">▼'+(c-p)+'</span>':'<span class="mv s">=</span>';
+const rkb=n=>n<=3?`<span class="md g${n}">${n}</span>`:String(n);
+function leadNeed(e,rd){const ev=e.ev,sc=ev.hs/130,cf=cfOf(ev),wp=-rd.cw*6*sc,gt=-rd.g*6*sc,dist=pts=>ev.k+(pts-60-54-wp-gt)/cf;
+ if(isTeamRd(e)){const t=teamLive(e);if(!t.length)return null;const lead=t[0],my=t.find(x=>x.c==S.cc);const mine=my?my.t:(rd.ph=='r2'?e.r1.filter(x=>x.j.tc==S.cc).reduce((q,x)=>q+x.p,0):0);if(lead.c==S.cc)return null;return dist(lead.t-mine+.1)}
+ const rows=liveRows(e);if(!rows.length)return null;const x=rd.ph=='r2'?e.r1.find(y=>y.j.me):null;return dist(rows[0].tot+.1-(x?x.p:0))}
+function hillLive(e,rd){const ev=e.ev,x0=80,y0=38,sx=500/(ev.hs*1.2),X=m=>x0+m*sx,Y=m=>y0+90*(1-Math.exp(-m/(ev.hs*.55))),cx=m=>clamp(X(m),20,590);
+ let p='M10 8 L'+x0+' '+y0;for(let m=0;m<=ev.hs*1.2;m+=4)p+=' L'+X(m).toFixed(1)+' '+Y(m).toFixed(1);
+ let lead=null;if(isTeamRd(e))rd.res.forEach(r=>{if(!lead||r.p>lead.p)lead=r});else{const rows=liveRows(e);if(rows.length)lead=rows[0].r}
+ const me=rd.res.find(x=>x.j.me),meAhead=rd.order.slice(rd.i).some(j=>j.me),need=meAhead?leadNeed(e,rd):null;
+ const dots=rd.res.map((r,i)=>r===lead||r.j.me?'':`<circle cx="${cx(r.d).toFixed(1)}" cy="${(Y(r.d)-5-(i%3)*4).toFixed(1)}" r="3" fill="var(--blue)" fill-opacity=".6"/>`).join('');
+ const dot=(r,col,rad)=>r?`<circle cx="${cx(r.d).toFixed(1)}" cy="${(Y(r.d)-8).toFixed(1)}" r="${rad}" fill="${col}" stroke="var(--bg)" stroke-width="2"/>`:'';
+ const ln=(d,col,dash,lab,y,an)=>`<line x1="${cx(d).toFixed(1)}" x2="${cx(d).toFixed(1)}" y1="16" y2="${(Y(d)+14).toFixed(1)}" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(cx(d)+(an=='end'?-5:5)).toFixed(1)}" y="${y}" text-anchor="${an}" style="fill:${col};font-weight:600">${lab}</text>`;
+ const nd=need!==null&&need>ev.k*.6&&need<ev.hs*1.2?ln(need,'var(--good)','2 4','cel ok. '+need.toFixed(1)+' m',30,'end'):'';
+ return`<svg viewBox="0 0 600 150" width="100%" role="img" aria-label="Profil skoczni z punktami lądowania"><path d="${p}" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+ <line x1="${X(ev.k).toFixed(1)}" x2="${X(ev.k).toFixed(1)}" y1="${(Y(ev.k)-26).toFixed(1)}" y2="${(Y(ev.k)+14).toFixed(1)}" stroke="var(--mute)" stroke-width="3"/><text x="${(X(ev.k)-8).toFixed(1)}" y="146">K ${ev.k}</text>
+ <line x1="${X(ev.hs).toFixed(1)}" x2="${X(ev.hs).toFixed(1)}" y1="${(Y(ev.hs)-20).toFixed(1)}" y2="${(Y(ev.hs)+14).toFixed(1)}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 3"/><text x="${(X(ev.hs)-8).toFixed(1)}" y="146">HS ${ev.hs}</text>
+ ${lead?ln(lead.d,'var(--k)','4 3','lider '+lead.d.toFixed(1)+' m',14,'start'):''}${nd}${dots}${dot(lead,'var(--k)',6)}${dot(me,'var(--ink)',7)}</svg>
+ <div class="mono mute" style="font-size:12px"><span style="color:var(--k)">●</span> lider · <span style="color:var(--ink)">●</span> ty · <span style="color:var(--good)">┆</span> potrzebna odległość · <span style="color:var(--blue)">●</span> pozostali</div>`}
+function banner(e,rd){const last=rd.res[rd.res.length-1],next=rd.order[rd.i];
+ const nb=next&&!rd.done?`<div class="bx" style="grid-column:1/-1">Na belce: <b>#${rd.i+1}</b> ${flag(next.c)}<b>${esc(next.n)}</b>${next.me?' (ty)':''}</div>`:'';
+ if(!last)return`<div class="band"><div class="bl" style="grid-column:1/-1"><div class="bnm">Seria się zaczyna</div></div>${nb}</div>`;
+ const team=isTeamRd(e),rk=team?teamLive(e).findIndex(x=>x.c==last.j.tc)+1:liveRows(e).findIndex(x=>x.r===last)+1,nl=/NOWY LIDER|obejmuje/.test(rd.log[0]||''),
+  n=last.nt,mi=n.indexOf(Math.min(...n)),ma=n.lastIndexOf(Math.max(...n)),jc=last.jc||[];
+ const tiles=n.map((x,i)=>`<span class="jt${i==mi||i==ma?' out':''}" title="Sędzia ${'ABCDE'[i]}">${jc[i]?flag(jc[i]):''}${x.toFixed(1)}</span>`).join('');
+ return`<div class="band"><div class="bl"><span class="bn">${last.bib}</span>${flag(last.j.c)}<div><div class="bnm">${esc(last.j.n)}</div><div class="bsub">${CC[last.j.c]||last.j.c}${nl?' <span class="tag">NOWY LIDER</span>':''}${last.fall?' <span class="tag">UPADEK</span>':''}</div></div></div>
+ <div class="bd"><b>${last.d.toFixed(1)}</b> m<div class="bsub">noty ${last.st.toFixed(1)}</div></div><div class="bp"><b>${last.p.toFixed(1)}</b> pkt<div class="bsub">wiatr ${last.w>0?'+':''}${last.w} · belka ${last.g>0?'+':''}${last.g}</div></div><div class="br">${rk<=3?rkb(rk):'<span class="md">'+rk+'</span>'}<div class="bsub">${team?'drużyna':'miejsce'}</div></div>
+ <div class="bx jts"><span class="bsub">Noty:</span>${tiles}<span class="bsub">odl. ${last.dp.toFixed(1)} · noty ${last.st.toFixed(1)} · wiatr ${last.wp>0?'+':''}${last.wp} · belka ${last.gt>0?'+':''}${last.gt}</span></div>${nb}</div>`}
+function standTable(e,rd){const pv=rd.prev||{},last=rd.res[rd.res.length-1];let body,head;
+ if(isTeamRd(e)){const t=teamLive(e),lead=t.length?t[0].t:0,me=t.findIndex(x=>x.c==S.cc);
+  const tr=(x,i)=>`<tr class="${x.c==S.cc?'me':''}${i==0?' lead':''}${last&&last.j.tc==x.c?' flash':''}"><td class="n">${rkb(i+1)}</td><td>${mv(pv[x.c],i+1)}</td><td>${flag(x.c)}${CC[x.c]||x.c}</td><td class="n">${x.a.toFixed(1)}</td><td class="n">${x.b===null?'-':x.b.toFixed(1)}</td><td class="n">${x.t.toFixed(1)}</td><td class="n">${i?'-'+(lead-x.t).toFixed(1):''}</td></tr>`;
+  body=t.map(tr).join('');
+  head='<th class="n">#</th><th></th><th>Kraj</th><th class="n">1. s.</th><th class="n">2. s.</th><th class="n">Suma</th><th class="n">Strata</th>';
+  if(!body)body='<tr><td colspan="7" class="mute">Brak wyników</td></tr>'}
+ else{const rows=liveRows(e),lead=rows.length?rows[0].tot:0,me=rows.findIndex(x=>x.r.j.me);
+  const tr=(x,i)=>`<tr class="${x.r.j.me?'me':''}${i==0?' lead':''}${x.r===last?' flash':''}"><td class="n">${rkb(i+1)}</td><td>${mv(pv[x.r.j.n],i+1)}</td><td>${flag(x.r.j.c)}${esc(x.r.j.n)}</td><td class="n">${x.r.d.toFixed(1)}</td><td class="n">${x.tot.toFixed(1)}</td><td class="n">${i?'-'+(lead-x.tot).toFixed(1):''}</td></tr>`;
+  body=rows.map(tr).join('');
+  head=`<th class="n">#</th><th></th><th>Zawodnik</th><th class="n">m</th><th class="n">${rd.ph=='r2'?'Suma':'Pkt'}</th><th class="n">Strata</th>`;
+  if(!body)body='<tr><td colspan="6" class="mute">Brak wyników</td></tr>'}
+ return`<h3>Wyniki na żywo</h3><div class="sc"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`}
+function startTable(e,rd){const team=isTeamRd(e);
+ const rows=rd.order.map((j,i)=>{const r=rd.res[i],cur=i==rd.i&&!rd.done;
+  return`<tr class="${j.me?'me':''}${cur?' cur':''}${r&&i==rd.i-1?' flash':''}"><td class="n">${i+1}</td><td>${flag(j.c)}${esc(j.n)}</td>${r?`<td class="n">${r.g>0?'+':''}${r.g}</td><td class="n">${r.w>0?'+':''}${r.w.toFixed(1)}</td><td class="n">${r.d.toFixed(1)}</td>`:`<td class="n">${cur?'►':''}</td><td></td><td class="n">-</td>`}</tr>`}).join('');
+ return`<h3>Lista startowa</h3><div class="sc live" data-cur="1"><table><thead><tr><th class="n">Nr</th><th>Zawodnik</th><th class="n">Belka</th><th class="n">Wiatr</th><th class="n">m</th></tr></thead><tbody>${rows}</tbody></table></div>`}
+function windBox(rd){const w=rd.nw===undefined?rd.cw:rd.nw,pos=clamp(50+w/3*50,2,98),hist=rd.ws.slice(-6).map(x=>(x>0?'+':'')+x.toFixed(1)).join(' ');
+ return`<div class="wind"><div class="wt"><span>WIATR TERAZ</span><span>skoczyło ${rd.i}/${rd.order.length}</span></div><div class="wv">${w>0?'+':''}${w.toFixed(2)}<small class="mono"> m/s</small></div><div class="wb"><i style="left:${pos}%"></i></div><div class="wt" style="justify-content:center"><b style="color:var(--ink)">◄ ${Math.abs(w)<.25?'bezwietrznie':w>0?'pod narty':'w plecy'} ►</b></div><div class="wt"><span>Belka jury</span><b style="color:var(--ink)">${sg(rd.g)}</b></div>${hist?`<div class="wt" style="font-size:11px">Ost.: ${hist}</div>`:''}</div>`}
+function gateBox(e,rd){const ev=e.ev,sc=ev.hs/130,w=rd.nw===undefined?rd.cw:rd.nw,hint=w<-.8?'Wiatr w plecy: wyższa belka daje prędkość, ale większe ryzyko.':w>.8?'Wiatr pod narty: możesz zejść z belki i zyskać punkty, kosztem długości.':'Warunki stabilne: zmiana belki to czyste ryzyko.';
+ return`<p class="mono mute" style="font-size:13px;margin:6px 0">${hint}</p><div class="gate" role="radiogroup" aria-label="Belka">${[-2,-1,0,1,2].map(d=>`<label><input type="radio" name="gate" value="${d}"${d==0?' checked':''}>${sg(rd.g+d)}<span>${d==0?'jak jury':(d>0?'wyżej':'niżej')+' '+Math.abs(d)}${d?`<br>${d>0?'+':'−'}${(Math.abs(d)*3*sc).toFixed(0)} m · ${d>0?'−':'+'}${(Math.abs(d)*6*sc).toFixed(0)} pkt`:''}</span></label>`).join('')}</div><p class="mono mute" style="font-size:12px;margin:2px 0 6px">Wyższa belka: dalszy skok, ale większy rozrzut i ryzyko upadku. Niższa: bezpieczniej, krótszy skok, punkty za belkę.</p>`}
+function livePanel(e,rd){const ev=e.ev,ph=rd.ph,next=rd.order[rd.i],meTurn=next&&next.me,meAhead=rd.order.slice(rd.i).some(j=>j.me),m=rd.res.find(x=>x.j.me);
+ let h=`<div class="topgrid"><div>${banner(e,rd)}</div>${windBox(rd)}</div><div style="max-width:720px;margin:0 auto">${hillLive(e,rd)}</div>`;
+ if(!rd.done){
+  if(meAhead)h+=`<div class="notice promo">${leadInfo(e,rd)}</div>`;
+  if(meTurn)h+=`<div><b>Twoja kolej.</b> Wybierz belkę i styl skoku.</div>${gateBox(e,rd)}<div class="risk" role="radiogroup" aria-label="Styl skoku"><label><input type="radio" name="risk" value="s"><b>Zachowawczo</b><span class="mute">Mniejszy rozrzut, krótszy skok</span></label><label><input type="radio" name="risk" value="n" checked><b>Normalnie</b><span class="mute">Pewny rytm</span></label><label><input type="radio" name="risk" value="a"><b>Ryzykownie</b><span class="mute">Daleko albo słabo</span></label></div><div class="row"><button class="b k" data-act="jump">Skocz</button></div>`;
+  else h+=`<div class="row" style="margin:8px 0"><button class="b" data-act="step" data-v="1">1 skoczek</button><button class="b" data-act="step" data-v="5">5 skoczków</button><button class="b p" data-act="step" data-v="999">${meAhead?'Do mojego skoku':'Do końca serii'}</button></div>`}
+ if(m){const team=isTeamRd(e),rk=team?teamLive(e).findIndex(x=>x.c==S.cc)+1:liveRows(e).findIndex(x=>x.r===m)+1,lastR=rd.res[rd.res.length-1];
+  h+=`<p class="mono" style="margin:8px 0"><b>Twój skok:</b> ${m.d.toFixed(1)} m · ${m.p.toFixed(1)} pkt · ${rk}. ${team?'miejsce drużyny':'miejsce teraz'}</p>`+(lastR!==m?`<details><summary class="mono">Noty i punkty twojego skoku</summary>${judges(m)}</details>`:'')}
+ if(rd.done){const rk=e[ph].findIndex(x=>x.j.me)+1;
+  if(ph=='q'&&rk>50)h+='<div class="notice">Nie awansujesz do konkursu. Ten weekend kończysz na kwalifikacjach.</div>';
+  if(ev.fm=='ind'&&ph=='r1'&&rk>30)h+='<div class="notice">Poza trzydziestką. Seria finałowa bez ciebie.</div>';
+  h+=`<p><button class="b p" data-act="nextph">${endNow()?'Zakończ konkurs':'Dalej'}</button></p>`}
+ h+=`<div class="cols"><div>${startTable(e,rd)}</div><div>${standTable(e,rd)}</div></div>${isTeamRd(e)?myTeamBox(Object.assign({},e,{r1:ph=='r1'?rd.res:e.r1,r2:ph=='r2'?rd.res:e.r2})):''}<h3>Relacja</h3><div class="log">${rd.log.slice(0,14).map(x=>'<div>'+x+'</div>').join('')}</div>`;
+ return h}
+function phasePanel(){const e=S.ev,ev=e.ev,ph=e.ph;if(ph=='done')return donePanel();
+ const rd=e.rd&&e.rd.ph==ph?e.rd:null;
+ let h=`<div class="card"><div class="row" style="justify-content:space-between"><h2>${PHL(e)}</h2><span class="mono mute">${ev.p} · K${ev.k} / HS${ev.hs}</span></div>${wxNote(e)}${rd?'':hill(ev,e.mk)}`;
+ if(!rd){const tr=ph[0]=='t';
+  h+=ph=='q'?'<p class="mute">Awansuje 50 najlepszych.</p>':ph=='r1'?'<p class="mute">'+(ev.fm!='ind'?'Skaczą wszyscy zawodnicy drużyny. Do 2. serii awansuje 8 drużyn.':'Do finałowej serii przechodzi 30 najlepszych.')+'</p>':tr?'<p class="mute">Zapoznaj się ze skocznią. Każdy trening podnosi znajomość obiektu.</p>':'';
+  return h+`<div class="row"><button class="b k" data-act="rstart">Rozpocznij serię</button>${ph=='t2'?'<button class="b" data-act="skip">Pomiń drugi trening</button>':''}</div></div>`}
+ return h+livePanel(e,rd)+'</div>'}
+function donePanel(){const e=S.ev,s=e.sum,ev=e.ev;
+ if(e.cancel)return`<div class="card"><h2>Konkurs odwołany</h2><p>${esc(ev.p)}: silny wiatr uniemożliwił rozegranie konkursu. Nie ma punktów ani klasyfikacji.</p><button class="b k" data-act="nextev">Następny konkurs</button></div>`;
+ return`<div class="card"><div class="row" style="justify-content:space-between"><h2>Wyniki: ${ev.p}</h2><span class="mono mute">${dfmt(ev.d)}</span></div>
+ <div class="row" style="gap:24px;margin:8px 0"><div><div class="big">${s.rk?s.rk+'.':'DNQ'}</div><div class="mute mono">miejsce</div></div><div><div class="big">${s.pt}</div><div class="mute mono">${s.pl}</div></div><div><div class="big">+${s.gp?s.tp:s.gain.length}</div><div class="mute mono">${s.gp?'pkt treningowe':'rozwój (automat)'}</div></div></div>
+ ${s.fell?'<div class="notice">Upadek przy lądowaniu. Noty za ten skok są mocno obniżone.</div>':''}${s.inj?`<div class="notice">Kontuzja: ${s.inj.n}. Opuścisz około ${s.inj.left} konkursów.</div>`:''}${s.gain&&s.gain.length?`<div class="notice promo">Rozwój po konkursie: ${s.gain.map(x=>'+1 '+x).join(', ')}.</div>`:''}
+ ${ev.l=='w'&&s.rk&&s.rk<=3?`<div class="notice promo">Medal mistrzostw świata: ${['złoty','srebrny','brązowy'][s.rk-1]}!</div>`:''}
+ ${s.promo?`<div class="notice promo">${s.promo}</div>`:''}
+ <h3>Klasyfikacja końcowa konkursu</h3>${s.team?teamTable(e.tt,12)+myTeamBox(e):tableTot(e.fin,12)}
+ <p class="row"><button class="b k" data-act="nextev">Następny konkurs</button>${(ev.l=='g'||ev.l=='c')?`<button class="b" data-act="tab-s">Wydaj punkty treningowe (${S.tp})</button>`:''}</p></div>`}
+function nextCard(){const e=S.evs[S.idx];if(!e)return'';
+ return`<div class="card"><div class="row" style="justify-content:space-between"><h2>${esc(e.p)}</h2><span class="mono">${dfmt(e.d)}</span></div>
+ <div class="row"><span class="pill l${e.l}">${LV[e.l]}</span>${e.fm=='team'?'<span class="pill">drużyny</span>':e.fm=='mix'?'<span class="pill">mikst</span>':''}${e.v?'<span class="pill">Termin FIS</span>':'<span class="pill e">Termin orientacyjny</span>'}<span class="mono mute">${flag(e.c)}${CC[e.c]} · K${e.k} · HS${e.hs}${e.hs>=200?' · loty':''}</span></div>${hill(e)}
+ ${S.note?'<div class="notice">'+S.note+'</div>':''}<p class="mono mute">Prognoza: wiatr ${wxLabel(wxP(e))}. Forma w ostatnich startach: ${formLbl(S.form)}.</p>
+ ${e.l==3&&S.lvl==2&&e.fm=='ind'?'<div class="notice promo">Powołanie od trenera na ten konkurs Pucharu Świata.</div>':e.fm!='ind'?'<div class="notice promo">Zakwalifikowałeś się do składu drużyny narodowej.</div>':''}
+ <p class="mute">${e.fm=='ind'?'Program: dwa treningi, kwalifikacje, dwie serie konkursowe.':e.fm=='team'?'Program: seria próbna i dwie serie drużynowe. Skacze czterech zawodników każdej drużyny.':'Program: seria próbna i dwie serie. Drużyna to dwóch mężczyzn i dwie kobiety.'}</p><button class="b k" data-act="start">Wejdź na skocznię</button></div>`}
+function viewK(){if(S.retired)return careerCard();if(S.end)return endCard();
+ const main=S.ev?phasePanel():nextCard();if(S.ev&&S.ev.rd)return`<div>${main}</div><div style="margin-top:16px">${sideCard()}</div>`;return`<div class="grid"><div>${main}</div><div>${sideCard()}</div></div>`}
+function endCard(){const s=S.end;return`<div class="card"><h2>Koniec sezonu ${seasonLabel(S.off)}</h2><p>${LV[s.l]}: ${s.rk?s.rk+'. miejsce na '+s.total+' sklasyfikowanych':'bez punktów w klasyfikacji'}.</p>${s.promo?`<div class="notice promo">${s.promo}</div>`:''}<p class="mute">Po zimie i lecie zaczyna się sezon ${seasonLabel(S.off+1)}. Przed pierwszym konkursem zimy dostajesz 14 pkt treningowych do rozdania, a latem kolejne za każdy konkurs Grand Prix.</p>${S.age>=30?`<div class="notice">Masz ${S.age} lat. ${mustRetire()?'To koniec drogi: wiek nie pozwala już na dalsze starty.':'Możesz walczyć dalej albo zakończyć karierę. Po trzydziestce umiejętności zaczynają spadać.'}</div>`:''}${S.inj?'<div class="notice">Nadal leczysz kontuzję: '+S.inj.n+'.</div>':''}<div class="row">${mustRetire()?'':'<button class="b k" data-act="newseason">Nowy sezon</button>'}${S.age>=30?'<button class="b" data-act="retire">'+(mustRetire()?'Zakończ karierę':'Zakończ karierę')+'</button>':''}</div></div>${newsCard(S.news)}`}
+const MN=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'],MS=['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
+function viewCal(){const evs=S.evs.filter(e=>!CALF||e.l==CALF),nxt=S.evs[S.idx];let lastM='';
+ const items=evs.map(e=>{const mi=+e.d.slice(5,7)-1,key=e.d.slice(0,7),head=key!==lastM?(lastM=key,`<h3 class="mh">${MN[mi]} ${e.d.slice(0,4)}</h3>`):'',cur=nxt===e,
+  fmt=e.fm=='team'?'<span class="pill">drużyny</span>':e.fm=='mix'?'<span class="pill">mikst</span>':'',
+  res=e.done?`<div class="mono tr">${e.win==='odwołany'?'Konkurs odwołany':'Wygrał: '+esc(e.win||'')}${e.myrk?' · Ty: '+e.myrk+'. miejsce':''}</div>`:'';
+  return head+`<div class="tl${cur?' now':e.done?' past':''}"><div class="dt"><b>${e.d.slice(8)}</b><span>${MS[mi]}</span></div><div class="tb"><div class="tt">${flag(e.c)}${esc(e.p)}${cur?' <span class="pill l3">następny</span>':''}</div><div class="row"><span class="pill l${e.l}">${e.l==3?'PŚ':e.l=='w'?'MŚ':e.l=='g'?'GP':e.l=='c'?'LCOC':'COC'}</span>${fmt}${e.v?'':'<span class="pill e">≈</span>'}<span class="mono mute">K${e.k} · HS${e.hs}${e.hs>=200?' · loty':''}</span></div>${res}</div></div>`}).join('');
+ return`<div class="row" style="margin-bottom:12px">${[0,2,3,'g','c','w'].map(l=>`<button class="chip" aria-pressed="${CALF===l}" data-act="calf" data-v="${l}">${l?LV[l]:'Wszystkie'}</button>`).join('')}</div><div class="card tlw">${items}</div><p class="mute">Terminy Pucharu Świata pochodzą z kalendarza FIS 2026/27. Znak ≈ oznacza orientacyjny termin Letniego Grand Prix i Pucharu Kontynentalnego. Konkursy drużynowe i mistrzostwa świata w Falun są pominięte w tej wersji.</p>`}
+function viewSt(){const l=LVF||S.lvl;
+ return`<div class="row" style="margin-bottom:12px">${[2,3,'g','c','n','w'].map(x=>`<button class="chip" aria-pressed="${l==x}" data-act="lvf" data-v="${x}">${LV[x]}</button>`).join('')}</div><div class="grid"><div>${standCard(l,false)}</div><div class="card"><h3>Kariera</h3>${S.hist.length?`<table><thead><tr><th>Sezon</th><th>Poziom</th><th class="n">Msc</th><th class="n">OVR</th></tr></thead><tbody>${S.hist.map(h=>`<tr><td>${h.s}</td><td>${LV[h.l]}</td><td class="n">${h.rk||'-'}</td><td class="n">${h.o}</td></tr>`).join('')}</tbody></table>`:'<p class="mute">Pierwszy sezon w toku.</p>'}${S.wch.length?'<h3>Mistrzostwa świata</h3><table><tbody>'+S.wch.map(x=>`<tr><td>${x.s}</td><td>${esc(x.ev)}</td><td class="n">${x.rk?x.rk+'.':'-'}${x.team?' (drużyna)':''}</td></tr>`).join('')+'</tbody></table>':''}</div></div>`}
+const cost=v=>v<60?1:v<75?2:v<90?3:4;
+const canUp=()=>!S.retired&&(phase()=='Lato'||S.pre);
+function phase(){const e=S.evs[S.idx];return e&&(e.l=='g'||e.l=='c')?'Lato':'Zima'}
+function viewS(){const o=ovr(S.a),th=S.lvl<3?{2:[64,10]}[S.lvl]:null,summer=phase()=='Lato'&&!S.ev;
+ return`<div class="card"><div class="row" style="justify-content:space-between"><h2>${flag(S.cc)}${esc(S.name)} · ${CC[S.cc]} · ${S.age} lat</h2><span class="mono">Pkt treningowe: <b>${S.tp}</b></span></div>
+ <div class="row" style="gap:16px;margin:10px 0"><div class="ovr">${o}</div><div class="mute">Overall (maks. 100)${th?`<br>Awans do ${LV[S.lvl+1]}: overall ${th[0]}+ i miejsce w czołowej ${th[1]} klasyfikacji, po minimum 3 konkursach.`:'<br>Jesteś w Pucharze Świata.'}</div></div>
+ ${Object.keys(ATTR).map(k=>`<div class="attr"><span>${ATTR[k]}</span><div class="bar"><i style="width:${S.a[k]}%"></i></div><b class="mono">${S.a[k]}</b><button class="b" data-act="up" data-v="${k}" ${!canUp()||S.tp<cost(S.a[k])||S.a[k]>=100?'disabled':''} aria-label="Podnieś: ${ATTR[k]}">+${cost(S.a[k])}</button></div>`).join('')}
+ <div class="notice ${canUp()?'promo':''}">${phase()=='Lato'?'Lato: przydzielasz punkty sam. Wolne punkty możesz wydać między konkursami Grand Prix.':S.pre?'Przedsezon: rozdziel punkty treningowe przed pierwszym konkursem zimy.':'Zima: rozwój odbywa się automatycznie po każdym konkursie. Lepsze wyniki i młody wiek dają szybszy postęp. Punkty ręczne dostaniesz znowu latem.'}</div>
+ <p class="mute">Wybicie i faza lotu liczą się najmocniej. Styl i lądowanie wpływają na noty, psychika na rozrzut skoków. Koszt rośnie wraz z poziomem.</p></div>${squadCard()}${youngCard()}`}
+function setup(){return`<div class="top"><div class="brand">Kariera <i>Skoczka</i></div></div><div class="card" style="max-width:520px;margin-top:20px"><h2>Nowa kariera</h2><p class="mute">Zaczynasz w wieku 16 lat zimą w Pucharze Kontynentalnym. Po sezonie zimowym startujesz latem w letniej serii swojego poziomu (Grand Prix dla Pucharu Świata, Letni Puchar Kontynentalny dla zaplecza) i sam rozdzielasz punkty rozwoju, zimą rozwój liczy się automatycznie. Celem jest awans do Pucharu Świata.</p>
+ <p><label for="nm">Imię i nazwisko</label><input type="text" id="nm" value="Jan Kowalski" maxlength="30"></p>
+ <p><label for="cc">Reprezentacja</label><select id="cc">${Object.keys(CC).map(c=>`<option value="${c}"${c=='POL'?' selected':''}>${CC[c]}</option>`).join('')}</select></p><button class="b k" data-act="new">Zacznij karierę</button></div>`}
+function render(){const app=document.getElementById('app');if(!S){app.innerHTML=setup();return}
+ const o=ovr(S.a),tabs=[['k','Konkurs'],['c','Kalendarz'],['t','Klasyfikacje'],['s','Skoczek']];
+ app.innerHTML=`<div class="top"><div class="brand">Kariera <i>Skoczka</i></div><div class="who"><span>${flag(S.cc)}<b>${esc(S.name)}</b> · ${S.cc} · ${S.age} lat</span><span class="pill l${S.lvl}">${LV[S.lvl]}</span><span class="pill">Forma: ${formLbl(S.form)}</span><span class="mono mute">${phase()} ${seasonLabel(S.off)}</span><div class="ovr" title="Overall">${o}</div></div></div>
+ <nav>${tabs.map(t=>`<button data-act="tab-${t[0]}" aria-current="${TAB==t[0]}">${t[1]}</button>`).join('')}<button data-act="reset" style="margin-left:auto">Nowa gra</button></nav>${TAB=='k'?viewK():TAB=='c'?viewCal():TAB=='t'?viewSt():viewS()}`;
+ const lv=document.querySelector('.live');if(lv){const c=lv.querySelector('.cur')||lv.querySelector('tr.me');if(c)lv.scrollTop+=c.getBoundingClientRect().top-lv.getBoundingClientRect().top-lv.clientHeight/2}}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v;
+ if(a=='new'){const n=document.getElementById('nm').value.trim()||'Zawodnik';newGame(n,document.getElementById('cc').value);TAB='k'}
+ else if(a=='reset'){if(b.dataset.sure){S=null;try{localStorage.removeItem('skoczek-v7')}catch(e){}}else{b.dataset.sure=1;b.textContent='Na pewno? Kliknij jeszcze raz';return}}
+ else if(a.startsWith('tab-'))TAB=a[4];
+ else if(a=='start')startEvent();
+ else if(a=='jump'){const r=document.querySelector('input[name=risk]:checked'),g=document.querySelector('input[name=gate]:checked');if(S.ev&&S.ev.rd)S.ev.rd.pg=g?+g.value:0;playMe(r?r.value:'n')}
+ else if(a=='rstart')startRound();else if(a=='step')stepRound(+v);
+ else if(a=='skip'){S.ev.ph=S.ev.wx=='q'?'r1':'q';S.ev.jumped=false;S.ev.mk=null}
+ else if(a=='nextph')nextPh();
+ else if(a=='nextev'){nextEvent();TAB='k'}
+ else if(a=='newseason')newSeason();
+ else if(a=='retire'){if(b.dataset.sure){retire()}else{b.dataset.sure=1;b.textContent='Na pewno? Kliknij jeszcze raz';return}}
+ else if(a=='calf')CALF=v=='g'?'g':+v;else if(a=='lvf')LVF=v=='g'?'g':+v;
+ else if(a=='up'){const c=cost(S.a[v]);if(S.tp>=c&&S.a[v]<100){S.tp-=c;S.a[v]++;save()}}
+ render()});
+render();
+</script>
